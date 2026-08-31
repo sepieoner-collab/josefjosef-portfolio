@@ -1,0 +1,80 @@
+---
+// This is the homepage. Everything between the two "---" lines runs once,
+// on the server, when the page is built — not in the visitor's browser.
+const sections = ["bio", "archi", "works", "academic", "stock"];
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>josef josef</title>
+	</head>
+	<body>
+		<header>
+			<a class="wordmark" href="/">josef josef.</a>
+			<nav>
+				<ul>
+					{sections.map((section) => (
+						<li><a href={`/${section}/`}>_{section}</a></li>
+					))}
+				</ul>
+			</nav>
+		</header>
+
+		<main>
+			<p class="placeholder">
+				Homepage — step 1 of the build. This proves the project runs; the
+				real full-bleed photo + overlay layout from the sketch comes next.
+			</p>
+		</main>
+
+		<style>
+			:root {
+				--bg: #eeeeec;
+				--fg: #333333;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				min-height: 100vh;
+				background: var(--bg);
+				color: var(--fg);
+				font-family: system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+			}
+			header {
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-start;
+				padding: 1.5rem;
+			}
+			.wordmark {
+				font-size: 2.5rem;
+				font-weight: 700;
+				color: var(--fg);
+				text-decoration: none;
+				line-height: 1;
+			}
+			nav ul {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+				text-align: right;
+			}
+			nav a {
+				color: var(--fg);
+				text-decoration: none;
+				font-size: 1.1rem;
+			}
+			main {
+				padding: 3rem 1.5rem;
+			}
+			.placeholder {
+				max-width: 32rem;
+				line-height: 1.5;
+			}
+		</style>
+	</body>
+</html>

@@ -1,12 +1,64 @@
 ---
 import Layout from "../layouts/Layout.astro";
+
+const email = "josef@josefjosef.cz";
+
+// date | role | dash | rest — a row with only `desc` spans from column two on
+const cv = [
+	{ date: "2025 -", desc: "josefjosef", note: "/studio, workshop" },
+	{ date: "2023", desc: "AVU_Figural Sculpture and Medal - Míča_internship" },
+	{ date: "2022 - 2024", desc: "AVU_School of architecture - Šik" },
+	{ date: "2017 - 2025", desc: "H3T architekti / Atelier HRA" },
+	{ date: "2017 - 2022", desc: "member of SPA" },
+	{ date: "2016 - 2022", desc: "FA ČVUT - Kraus, Císler, Baum, Kuzemenský" },
+	{ gap: true },
+	{ date: "2014 - 2016", role: "carpenter", place: "Dům raz dva" },
+	{ date: "2011 - 2013", role: "joiner with", place: "Petr Soudek" },
+	{ date: "2007 - 2011", role: "technician", place: "AgE" },
+	{ date: "*1989", desc: "Josef Kučera" },
+];
 ---
 
-<Layout title="josef josef — bio" section="bio">
+<Layout title="josefjosef — bio" section="bio">
 	<section class="screen">
-		<div class="grid">
-			<div class="page-area">
-				<p class="page-note">_bio</p>
+		<div class="grid bio-text">
+			<p class="bio-intro">
+				digital portfolio<br />
+				not many dressed up pictures<br />
+				processual stuff
+			</p>
+
+			<p class="bio-contact">
+				<a href={`mailto:${email}`}>{email}</a>
+			</p>
+
+			<div class="bio-cv">
+				{cv.map((row) =>
+					row.gap ? (
+						<span class="cv-space" />
+					) : row.role ? (
+						<>
+							<span>{row.date}</span>
+							<span>{row.role}</span>
+							<span>-</span>
+							<span>{row.place}</span>
+						</>
+					) : (
+						<>
+							<span>{row.date}</span>
+							<span class="cv-wide">
+								{row.note ? <strong>{row.desc}</strong> : row.desc}
+								{row.note && <span class="cv-note"> {row.note}</span>}
+							</span>
+						</>
+					)
+				)}
+			</div>
+
+			<p class="bio-date">05/1989 –</p>
+
+			<div class="bio-photo">
+				<img src="/bio-portrait.jpg" alt="Josef Kučera" />
 			</div>
 		</div>
 	</section>

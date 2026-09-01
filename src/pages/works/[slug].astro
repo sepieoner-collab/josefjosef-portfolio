@@ -56,6 +56,14 @@ const related = relatedTo(project);
 		const full = document.getElementById("full-img");
 		const cap = document.getElementById("proj-caption");
 
+		// taller than wide? then centre it; otherwise it stays hard left
+		const fit = (el) =>
+			el.classList.toggle("is-portrait", el.naturalHeight > el.naturalWidth);
+		[img, full].forEach((el) => {
+			el.addEventListener("load", () => fit(el));
+			if (el.complete && el.naturalWidth) fit(el);
+		});
+
 		const show = (n) => {
 			i = (n + photos.length) % photos.length;
 			const p = photos[i];

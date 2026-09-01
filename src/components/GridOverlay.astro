@@ -53,6 +53,30 @@
 		margin: document.getElementById("gp-margin-out"),
 	};
 
+	// draw the overlay and label the sliders, WITHOUT touching the grid
+	function draw() {
+		const cols = Number(inputs.cols.value);
+		const rows = Number(inputs.rows.value);
+		const g = Number(inputs.gutter.value);
+		const m = Number(inputs.margin.value);
+		if (overlay) {
+			overlay.innerHTML = "";
+			for (let i = 0; i < cols * rows; i++) {
+				const cell = document.createElement("div");
+				cell.className = "grid-overlay__cell";
+				overlay.appendChild(cell);
+			}
+		}
+		if (outs.cols) outs.cols.textContent = String(cols);
+		if (outs.rows) outs.rows.textContent = String(rows);
+		if (outs.gutter) outs.gutter.textContent = `square ÷ ${g}`;
+		if (outs.margin) outs.margin.textContent = `${m} × gutter`;
+		if (readout) {
+			readout.textContent =
+				`${cols} cols · ${rows} rows · gutter = square/${g} · margin = ${m}× gutter`;
+		}
+	}
+
 	function apply() {
 		const cols = Number(inputs.cols.value);
 		const rows = Number(inputs.rows.value);
@@ -117,5 +141,5 @@
 		}
 	});
 
-	apply();
+	draw();
 </script>

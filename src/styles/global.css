@@ -28,7 +28,9 @@
 	   gutter-sized). 8 columns -> 8 + 9/4 = 10.25. 5 rows -> 5 + 6/4 = 6.5. */
 	--grid-cols: 8;
 	--grid-rows: 5;
-	--grid-square: min(calc(100vw / 10.25), calc(100vh / 6.5));
+	/* fitted as if the screen were half a gutter smaller on every side
+	   (10.25 + 2x0.125 = 10.5 across, 6.5 + 2x0.125 = 6.75 down) */
+	--grid-square: min(calc(100vw / 10.5), calc(100vh / 6.75));
 	--grid-gutter: calc(var(--grid-square) / 4);
 	--grid-margin: var(--grid-gutter);
 	--grid-width: calc(var(--grid-square) * 10.25);
@@ -36,6 +38,8 @@
 
 	/* Helvetica's descender depth, used to sit a baseline on a grid line */
 	--descender: 0.21em;
+	/* how far a descender's ink spills past the bottom of its own box */
+	--ink-spill: 0.07em;
 }
 
 * {
@@ -110,8 +114,9 @@ img {
 	grid-column: 1 / 7;
 	grid-row: 1;
 	align-self: start;
-	/* the em box is exactly one square tall, so the wordmark fills row 1
-	   exactly and never reaches into the gutters above or below */
+	/* the em box is one square tall, lifted so the j's tail rests on row 1's
+	   lower line instead of hanging through it */
+	transform: translateY(-0.068em);
 	white-space: nowrap;
 	font-size: var(--grid-square);
 	font-weight: 700;
@@ -123,8 +128,8 @@ img {
 	grid-column: 1 / 5;
 	grid-row: 2;
 	align-self: start;
-	/* baseline on the same line the wordmark's foot rests on */
-	transform: translateY(calc(-100% + var(--descender)));
+	/* the p's tail rests on the line the wordmark's foot rests on */
+	transform: translateY(calc(-100% - var(--ink-spill)));
 	margin: 0;
 	line-height: 1;
 	font-size: calc(var(--grid-square) * 0.18);
@@ -164,33 +169,33 @@ body.is-inner .site-nav li.current {
 .site-nav li:nth-child(1) {
 	grid-row: 1;
 	align-self: start;
-	transform: translateY(calc(-100% + var(--descender)));
+	transform: translateY(-100%);
 }
 .site-nav li:nth-child(2) {
 	grid-row: 2;
 	align-self: start;
-	transform: translateY(calc(-100% + var(--descender)));
+	transform: translateY(-100%);
 }
 .site-nav li:nth-child(3) {
 	grid-row: 3;
 	align-self: start;
-	transform: translateY(calc(-100% + var(--descender)));
+	transform: translateY(-100%);
 }
 .site-nav li:nth-child(4) {
 	grid-row: 4;
 	align-self: start;
-	transform: translateY(calc(-100% + var(--descender)));
+	transform: translateY(-100%);
 }
 .site-nav li:nth-child(5) {
 	grid-row: 5;
 	align-self: start;
-	transform: translateY(calc(-100% + var(--descender)));
+	transform: translateY(-100%);
 }
 .site-nav li:nth-child(6) {
 	grid-row: 5;
 	align-self: end;
 	/* the sixth line: the grid's bottom edge, out in the margin band */
-	transform: translateY(calc(var(--grid-margin) + var(--descender)));
+	transform: translateY(var(--grid-margin));
 }
 .site-nav a {
 	color: var(--header-fg, var(--fg));
@@ -413,7 +418,8 @@ body.is-inner .tagline {
 	grid-column: 1 / 5;
 	grid-row: 2;
 	align-self: start;
-	transform: translateY(calc(-100% + var(--descender)));
+	/* wholly inside the gutter: the tail rests on its lower line */
+	transform: translateY(calc(-100% - var(--ink-spill)));
 	margin: 0;
 	line-height: 1;
 	font-size: calc(var(--grid-square) * 0.172);
@@ -426,14 +432,21 @@ body.is-inner .tagline {
 	align-items: center;
 	justify-content: center;
 }
-.proj-stage img {
+.proj-stage img,
+.proj-full img {
 	/* contain, not max-width: a small picture must grow to the area too.
-	   the picture sits on the BOTTOM line of its area, whatever its ratio */
+	   every picture sits on the BOTTOM line of its area. a landscape one
+	   also goes hard left; a portrait one centres instead, so it does not
+	   hide under the "previous" zone. */
 	width: 100%;
 	height: 100%;
 	object-fit: contain;
 	object-position: left bottom;
 	display: block;
+}
+.proj-stage img.is-portrait,
+.proj-full img.is-portrait {
+	object-position: center bottom;
 }
 /* the click zones sit over the picture */
 /* the pointer says what each area does, drawn in the site's own line weight
@@ -442,10 +455,10 @@ body.is-inner .tagline {
 	grid-row: 2 / 6;
 	z-index: 2;
 }
-.zone-prev { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2764%27%20height%3D%2764%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cg%20fill%3D%27none%27%20stroke-linecap%3D%27butt%27%20stroke-linejoin%3D%27miter%27%3E%3Cg%20stroke%3D%27%23ffffff%27%20stroke-width%3D%273.2%27%20stroke-opacity%3D%27.85%27%3E%3Cpath%20d%3D%27M42%2010%20L20%2032%20L42%2054%27%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%27%23914343%27%20stroke-width%3D%271.5%27%3E%3Cpath%20d%3D%27M42%2010%20L20%2032%20L42%2054%27%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E") 32 32, pointer; }
-.zone-next { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2764%27%20height%3D%2764%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cg%20fill%3D%27none%27%20stroke-linecap%3D%27butt%27%20stroke-linejoin%3D%27miter%27%3E%3Cg%20stroke%3D%27%23ffffff%27%20stroke-width%3D%273.2%27%20stroke-opacity%3D%27.85%27%3E%3Cpath%20d%3D%27M22%2010%20L44%2032%20L22%2054%27%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%27%23914343%27%20stroke-width%3D%271.5%27%3E%3Cpath%20d%3D%27M22%2010%20L44%2032%20L22%2054%27%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E") 32 32, pointer; }
-.zone-full { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2764%27%20height%3D%2764%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cg%20fill%3D%27none%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cg%20stroke%3D%27%23ffffff%27%20stroke-width%3D%273.2%27%20stroke-opacity%3D%27.85%27%3E%3Cpath%20d%3D%27M12%2024V12h12%27%2F%3E%3Cpath%20d%3D%27M40%2012h12v12%27%2F%3E%3Cpath%20d%3D%27M52%2040v12h-12%27%2F%3E%3Cpath%20d%3D%27M24%2052H12v-12%27%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%27%231F4A66%27%20stroke-width%3D%271.5%27%3E%3Cpath%20d%3D%27M12%2024V12h12%27%2F%3E%3Cpath%20d%3D%27M40%2012h12v12%27%2F%3E%3Cpath%20d%3D%27M52%2040v12h-12%27%2F%3E%3Cpath%20d%3D%27M24%2052H12v-12%27%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E") 32 32, pointer; }
-body.is-full .zone-full { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2764%27%20height%3D%2764%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cg%20fill%3D%27none%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cg%20stroke%3D%27%23ffffff%27%20stroke-width%3D%273.2%27%20stroke-opacity%3D%27.85%27%3E%3Cpath%20d%3D%27M24%2012v12H12%27%2F%3E%3Cpath%20d%3D%27M52%2024h-12V12%27%2F%3E%3Cpath%20d%3D%27M40%2052v-12h12%27%2F%3E%3Cpath%20d%3D%27M12%2040h12v12%27%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%27%231F4A66%27%20stroke-width%3D%271.5%27%3E%3Cpath%20d%3D%27M24%2012v12H12%27%2F%3E%3Cpath%20d%3D%27M52%2024h-12V12%27%2F%3E%3Cpath%20d%3D%27M40%2052v-12h12%27%2F%3E%3Cpath%20d%3D%27M12%2040h12v12%27%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E") 32 32, pointer; }
+.zone-prev { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2764%27%20height%3D%2764%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cg%20fill%3D%27none%27%20stroke-linecap%3D%27butt%27%20stroke-linejoin%3D%27miter%27%3E%3Cg%20stroke%3D%27%23b3b3b3%27%20stroke-width%3D%272.4%27%20stroke-opacity%3D%27.9%27%3E%3Cpath%20d%3D%27M42%2010%20L20%2032%20L42%2054%27%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%27%233a3a3a%27%20stroke-width%3D%271.5%27%3E%3Cpath%20d%3D%27M42%2010%20L20%2032%20L42%2054%27%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E") 32 32, pointer; }
+.zone-next { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2764%27%20height%3D%2764%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cg%20fill%3D%27none%27%20stroke-linecap%3D%27butt%27%20stroke-linejoin%3D%27miter%27%3E%3Cg%20stroke%3D%27%23b3b3b3%27%20stroke-width%3D%272.4%27%20stroke-opacity%3D%27.9%27%3E%3Cpath%20d%3D%27M22%2010%20L44%2032%20L22%2054%27%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%27%233a3a3a%27%20stroke-width%3D%271.5%27%3E%3Cpath%20d%3D%27M22%2010%20L44%2032%20L22%2054%27%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E") 32 32, pointer; }
+.zone-full { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2764%27%20height%3D%2764%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cg%20fill%3D%27none%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cg%20stroke%3D%27%23b3b3b3%27%20stroke-width%3D%272.4%27%20stroke-opacity%3D%27.9%27%3E%3Cpath%20d%3D%27M12%2024V12h12%27%2F%3E%3Cpath%20d%3D%27M40%2012h12v12%27%2F%3E%3Cpath%20d%3D%27M52%2040v12h-12%27%2F%3E%3Cpath%20d%3D%27M24%2052H12v-12%27%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%27%233a3a3a%27%20stroke-width%3D%271.5%27%3E%3Cpath%20d%3D%27M12%2024V12h12%27%2F%3E%3Cpath%20d%3D%27M40%2012h12v12%27%2F%3E%3Cpath%20d%3D%27M52%2040v12h-12%27%2F%3E%3Cpath%20d%3D%27M24%2052H12v-12%27%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E") 32 32, pointer; }
+body.is-full .zone-full { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2764%27%20height%3D%2764%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cg%20fill%3D%27none%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cg%20stroke%3D%27%23b3b3b3%27%20stroke-width%3D%272.4%27%20stroke-opacity%3D%27.9%27%3E%3Cpath%20d%3D%27M24%2012v12H12%27%2F%3E%3Cpath%20d%3D%27M52%2024h-12V12%27%2F%3E%3Cpath%20d%3D%27M40%2052v-12h12%27%2F%3E%3Cpath%20d%3D%27M12%2040h12v12%27%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%27%233a3a3a%27%20stroke-width%3D%271.5%27%3E%3Cpath%20d%3D%27M24%2012v12H12%27%2F%3E%3Cpath%20d%3D%27M52%2024h-12V12%27%2F%3E%3Cpath%20d%3D%27M40%2052v-12h12%27%2F%3E%3Cpath%20d%3D%27M12%2040h12v12%27%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E") 32 32, pointer; }
 .zone-prev {
 	grid-column: 1;
 }
@@ -523,11 +536,7 @@ body.is-full .proj-full {
 	display: none;
 }
 
-.proj-full img {
-	width: 100%;
-	height: 100%;
-	object-fit: contain;
-}
+
 .proj-full .zone {
 	position: absolute;
 	top: 0;

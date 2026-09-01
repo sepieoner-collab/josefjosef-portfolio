@@ -405,6 +405,148 @@ body.is-inner .tagline {
 	display: block;
 }
 
+/* --- a project page ------------------------------------------------------
+   one picture at a time inside its limit (columns 1-5, rows 2-5): it fits,
+   keeps its ratio, and is as large as the area allows. clicking the outer
+   columns steps back and forward; clicking the middle goes fullscreen. */
+.proj-name {
+	grid-column: 1 / 5;
+	grid-row: 2;
+	align-self: start;
+	transform: translateY(calc(-100% + var(--descender)));
+	margin: 0;
+	line-height: 1;
+	font-size: calc(var(--grid-square) * 0.172);
+}
+.proj-stage {
+	grid-column: 1 / 6;
+	grid-row: 2 / 6;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.proj-stage img {
+	/* contain, not max-width: a small picture must grow to the area too.
+	   the picture sits on the BOTTOM line of its area, whatever its ratio */
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	object-position: left bottom;
+	display: block;
+}
+/* the click zones sit over the picture */
+/* the pointer says what each area does, drawn in the site's own line weight
+   rather than borrowing the operating system's icons */
+.zone {
+	grid-row: 2 / 6;
+	z-index: 2;
+}
+.zone-prev { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2764%27%20height%3D%2764%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cg%20fill%3D%27none%27%20stroke-linecap%3D%27butt%27%20stroke-linejoin%3D%27miter%27%3E%3Cg%20stroke%3D%27%23ffffff%27%20stroke-width%3D%273.2%27%20stroke-opacity%3D%27.85%27%3E%3Cpath%20d%3D%27M42%2010%20L20%2032%20L42%2054%27%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%27%23914343%27%20stroke-width%3D%271.5%27%3E%3Cpath%20d%3D%27M42%2010%20L20%2032%20L42%2054%27%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E") 32 32, pointer; }
+.zone-next { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2764%27%20height%3D%2764%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cg%20fill%3D%27none%27%20stroke-linecap%3D%27butt%27%20stroke-linejoin%3D%27miter%27%3E%3Cg%20stroke%3D%27%23ffffff%27%20stroke-width%3D%273.2%27%20stroke-opacity%3D%27.85%27%3E%3Cpath%20d%3D%27M22%2010%20L44%2032%20L22%2054%27%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%27%23914343%27%20stroke-width%3D%271.5%27%3E%3Cpath%20d%3D%27M22%2010%20L44%2032%20L22%2054%27%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E") 32 32, pointer; }
+.zone-full { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2764%27%20height%3D%2764%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cg%20fill%3D%27none%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cg%20stroke%3D%27%23ffffff%27%20stroke-width%3D%273.2%27%20stroke-opacity%3D%27.85%27%3E%3Cpath%20d%3D%27M12%2024V12h12%27%2F%3E%3Cpath%20d%3D%27M40%2012h12v12%27%2F%3E%3Cpath%20d%3D%27M52%2040v12h-12%27%2F%3E%3Cpath%20d%3D%27M24%2052H12v-12%27%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%27%231F4A66%27%20stroke-width%3D%271.5%27%3E%3Cpath%20d%3D%27M12%2024V12h12%27%2F%3E%3Cpath%20d%3D%27M40%2012h12v12%27%2F%3E%3Cpath%20d%3D%27M52%2040v12h-12%27%2F%3E%3Cpath%20d%3D%27M24%2052H12v-12%27%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E") 32 32, pointer; }
+body.is-full .zone-full { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2764%27%20height%3D%2764%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cg%20fill%3D%27none%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cg%20stroke%3D%27%23ffffff%27%20stroke-width%3D%273.2%27%20stroke-opacity%3D%27.85%27%3E%3Cpath%20d%3D%27M24%2012v12H12%27%2F%3E%3Cpath%20d%3D%27M52%2024h-12V12%27%2F%3E%3Cpath%20d%3D%27M40%2052v-12h12%27%2F%3E%3Cpath%20d%3D%27M12%2040h12v12%27%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%27%231F4A66%27%20stroke-width%3D%271.5%27%3E%3Cpath%20d%3D%27M24%2012v12H12%27%2F%3E%3Cpath%20d%3D%27M52%2024h-12V12%27%2F%3E%3Cpath%20d%3D%27M40%2052v-12h12%27%2F%3E%3Cpath%20d%3D%27M12%2040h12v12%27%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E") 32 32, pointer; }
+.zone-prev {
+	grid-column: 1;
+}
+.zone-next {
+	grid-column: 5;
+}
+.zone-full {
+	grid-column: 2 / 5;
+	/* reach the gutters either side, as the sketch does */
+	margin-inline: calc(var(--grid-gutter) * -1);
+}
+
+.proj-about {
+	grid-column: 6 / 8;
+	grid-row: 2 / 4;
+	align-self: start;
+	max-height: 100%;
+	overflow-y: auto;
+	scrollbar-width: none;
+	white-space: pre-line;
+	margin: 0;
+	line-height: 1;
+	font-size: calc(var(--grid-square) * 0.0836);
+	font-weight: 300;
+}
+.proj-related {
+	grid-column: 6 / 8;
+	grid-row: 3;
+	align-self: end;
+	transform: translateY(var(--descender));
+	margin: 0;
+	line-height: 1.6;
+	font-size: calc(var(--grid-square) * 0.0836);
+	font-weight: 300;
+	color: var(--fg-muted);
+}
+.proj-related a {
+	color: var(--fg);
+}
+
+.proj-caption {
+	grid-column: 6 / 8;
+	grid-row: 4 / 6;
+	align-self: end;
+	transform: translateY(var(--descender));
+	margin: 0;
+	line-height: 1;
+	font-size: calc(var(--grid-square) * 0.0861);
+}
+.proj-dates {
+	grid-column: 1 / 3;
+	grid-row: 5;
+	align-self: end;
+	transform: translateY(calc(var(--grid-margin) + var(--descender)));
+	margin: 0;
+	line-height: 1;
+	font-size: calc(var(--grid-square) * 0.129);
+	color: var(--fg-muted);
+}
+
+/* fullscreen keeps the same three zones: sides step, middle comes back */
+.proj-full {
+	position: fixed;
+	inset: 0;
+	z-index: 100;
+	background: var(--bg);
+	display: none;
+	align-items: center;
+	justify-content: center;
+}
+body.is-full .proj-full {
+	display: flex;
+}
+.proj-about::-webkit-scrollbar {
+	display: none;
+}
+
+.proj-full img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+.proj-full .zone {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+}
+.proj-full .zone-prev {
+	left: 0;
+	width: 20%;
+}
+.proj-full .zone-next {
+	right: 0;
+	width: 20%;
+}
+.proj-full .zone-full {
+	left: 20%;
+	right: 20%;
+	margin-inline: 0;
+}
+
 .page-area {
 	grid-column: 1 / 8;
 	grid-row: 2 / 6;

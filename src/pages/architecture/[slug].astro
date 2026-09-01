@@ -1,0 +1,80 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { bySection, relatedTo, type Project } from "../../data/projects";
+
+export function getStaticPaths() {
+	return bySection("architecture").map((project) => ({
+		params: { slug: project.slug },
+		props: { project },
+	}));
+}
+
+const { project } = Astro.props as { project: Project };
+const related = relatedTo(project);
+---
+
+<Layout title={`josefjosef — ${project.name}`} section="architecture">
+	<section class="screen">
+		<div class="grid">
+			<p class="proj-name">{project.name}</p>
+
+			<div class="proj-stage">
+				<img id="proj-img" src={project.photos[0].src} alt="" />
+			</div>
+
+			<span class="zone zone-prev" data-step="-1"></span>
+			<span class="zone zone-full" data-full="1"></span>
+			<span class="zone zone-next" data-step="1"></span>
+
+			<p class="proj-about">{project.description}</p>
+			{related.length > 0 && (
+				<p class="proj-related">
+					see also{" "}
+					{related.map((r, n) => (
+						<>
+							{n > 0 && ", "}
+							<a href={`/${r.section}/${r.slug}/`}>{r.name}</a>
+						</>
+					))}
+				</p>
+			)}
+			<p class="proj-caption" id="proj-caption">{project.photos[0].caption}</p>
+			<p class="proj-dates">{project.dates}</p>
+		</div>
+	</section>
+
+	<div class="proj-full" id="proj-full">
+		<img id="full-img" src={project.photos[0].src} alt="" />
+		<span class="zone zone-prev" data-step="-1"></span>
+		<span class="zone zone-full" data-full="1"></span>
+		<span class="zone zone-next" data-step="1"></span>
+	</div>
+
+	<script is:inline define:vars={{ photos: project.photos }}>
+		let i = 0;
+		const img = document.getElementById("proj-img");
+		const full = document.getElementById("full-img");
+		const cap = document.getElementById("proj-caption");
+
+		const show = (n) => {
+			i = (n + photos.length) % photos.length;
+			const p = photos[i];
+			img.src = p.src;
+			full.src = p.src;
+			cap.textContent = p.caption ?? "";
+		};
+
+		document.querySelectorAll("[data-step]").forEach((el) =>
+			el.addEventListener("click", () => show(i + Number(el.dataset.step)))
+		);
+		document.querySelectorAll("[data-full]").forEach((el) =>
+			el.addEventListener("click", () => document.body.classList.toggle("is-full"))
+		);
+		// arrow keys, and escape to leave fullscreen
+		window.addEventListener("keydown", (e) => {
+			if (e.key === "ArrowRight") show(i + 1);
+			if (e.key === "ArrowLeft") show(i - 1);
+			if (e.key === "Escape") document.body.classList.remove("is-full");
+		});
+	</script>
+</Layout>

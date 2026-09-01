@@ -376,6 +376,35 @@ body.is-inner .tagline {
 	object-position: left bottom;
 }
 
+/* --- _references ---------------------------------------------------------
+   three stacked columns, each 2 squares + 2 gutters wide, running from
+   column 1's left edge to column 7's left edge. pictures fill the column
+   width, keep their own ratio and touch top and bottom. the three scroll
+   together as one field; it ends when the pictures do. */
+.refs-scroll {
+	grid-column: 1 / 7;
+	/* the three columns reach one gutter past column 6 */
+	margin-right: calc(var(--grid-gutter) * -1);
+	grid-row: 1 / -1;
+	margin-bottom: calc(var(--grid-margin) * -1);
+	overflow-y: auto;
+	overflow-x: hidden;
+	scrollbar-width: none;
+}
+.refs-scroll::-webkit-scrollbar {
+	display: none;
+}
+.refs-columns {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	align-items: start;
+}
+.refs-col img {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
 .page-area {
 	grid-column: 1 / 8;
 	grid-row: 2 / 6;

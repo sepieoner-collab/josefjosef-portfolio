@@ -1,12 +1,42 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+
+// Every reference picture, in one list. Add or remove freely — the columns
+// rebalance themselves.
+const PICTURES = Array.from({ length: 27 }, (_, i) => `/ref-${(i % 12) + 1}.svg`);
+
+// Each column is 2 squares + 2 gutters wide, so a picture's height is that
+// width divided by its ratio. Ratios are baked into the placeholder files;
+// this table lets the balancing know them ahead of the browser.
+const RATIOS: Record<string, number> = {
+	"/ref-1.svg": 3 / 2, "/ref-2.svg": 2 / 3, "/ref-3.svg": 4 / 3,
+	"/ref-4.svg": 3 / 4, "/ref-5.svg": 16 / 9, "/ref-6.svg": 9 / 16,
+	"/ref-7.svg": 16 / 10, "/ref-8.svg": 1, "/ref-9.svg": 9 / 19,
+	"/ref-10.svg": 3 / 2, "/ref-11.svg": 4 / 3, "/ref-12.svg": 2 / 3,
+};
+
+// drop each picture into whichever column is currently shortest, so the three
+// finish at about the same depth instead of trailing off unevenly
+const columns: string[][] = [[], [], []];
+const depth = [0, 0, 0];
+for (const src of PICTURES) {
+	const shortest = depth.indexOf(Math.min(...depth));
+	columns[shortest].push(src);
+	depth[shortest] += 1 / (RATIOS[src] ?? 1.5);
+}
 ---
 
 <Layout title="josefjosef — references" section="references">
 	<section class="screen">
 		<div class="grid">
-			<div class="page-area">
-				<p class="page-note">_references</p>
+			<div class="refs-scroll">
+				<div class="refs-columns">
+					{columns.map((col) => (
+						<div class="refs-col">
+							{col.map((src) => <img src={src} alt="" />)}
+						</div>
+					))}
+				</div>
 			</div>
 		</div>
 	</section>

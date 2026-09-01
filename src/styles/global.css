@@ -1,0 +1,221 @@
+/* =========================================================================
+   josef josef — all site styles live in this one file.
+
+   Why one file: Astro caches the styles written inside each component until
+   the dev server restarts, but this file updates live on every browser
+   reload. Keeping everything here means changes show up immediately.
+   ========================================================================= */
+
+:root {
+	--bg: #e6e6e6; /* ~10% black */
+	--fg: #3a3a3a; /* ~77% black - dark grey, not pure black */
+	--fg-muted: #767676;
+
+	/* --- modular grid ---
+	   6 columns x 4 rows of perfect squares. the gutter between squares,
+	   AND the outer margin around the whole grid, are both exactly 1/4
+	   of one square's side — margin, gutter and square are one
+	   consistent proportional system, no arbitrary pixel values.
+
+	   the grid is sized to be as large as possible while still fitting
+	   entirely on screen: it fills either the full viewport width or the
+	   full viewport height (whichever is the tighter fit for its
+	   proportions), and sits flush to the top-left corner.
+
+	   the math: with N units (columns or rows), gutter = square/4 and
+	   margin = gutter, so total size in "squares" = N + (N+1)/4
+	   (N squares + (N-1) inner gutters + 2 outer margins, all
+	   gutter-sized). 6 columns -> 6 + 7/4 = 7.75. 4 rows -> 4 + 5/4 = 5.25. */
+	--grid-cols: 6;
+	--grid-rows: 4;
+	--grid-square: min(calc(100vw / 7.75), calc(100vh / 5.25));
+	--grid-gutter: calc(var(--grid-square) / 4);
+	--grid-margin: var(--grid-gutter);
+	--grid-width: calc(var(--grid-square) * 7.75);
+	--grid-height: calc(var(--grid-square) * 5.25);
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background: var(--bg);
+	color: var(--fg);
+	font-family: "helvetica-lt-pro", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+	line-height: 1.4;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+img {
+	max-width: 100%;
+	display: block;
+}
+
+/* --- grid containers --------------------------------------------------- */
+
+/* one full screen's worth of the modular grid: 6 columns x 4 rows of squares */
+.grid {
+	display: grid;
+	grid-template-columns: repeat(var(--grid-cols), var(--grid-square));
+	grid-template-rows: repeat(var(--grid-rows), var(--grid-square));
+	gap: var(--grid-gutter);
+	width: var(--grid-width);
+	height: var(--grid-height);
+	padding: var(--grid-margin);
+}
+
+.screen {
+	min-height: 100vh;
+}
+
+/* --- header: wordmark + nav, on the same grid as the page -------------- */
+
+.site-header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 10;
+	pointer-events: none;
+}
+.site-header a {
+	pointer-events: auto;
+}
+
+/* the block itself is transparent to the grid, so the wordmark and the
+   tagline can each be anchored to their own grid line */
+.wordmark-block {
+	display: contents;
+}
+.wordmark {
+	display: block;
+	grid-column: 1 / 5;
+	grid-row: 1;
+	/* sized from the grid: at this size "josef josef" spans exactly the
+	   4 columns of its block, and it rescales with the grid automatically */
+	font-size: calc(var(--grid-square) * 0.995);
+	font-weight: 700;
+	line-height: 0.92;
+	letter-spacing: -0.02em;
+	color: var(--header-fg, var(--fg));
+}
+.tagline {
+	grid-column: 1 / 5;
+	grid-row: 2;
+	align-self: start;
+	/* pull it up so its bottom edge rests on the lower line of the gutter */
+	transform: translateY(-100%);
+	text-align: right;
+	margin: 0;
+	font-size: calc(var(--grid-square) * 0.105);
+	color: var(--header-fg, var(--fg-muted));
+}
+
+/* the nav items become direct children of the header grid, so each one can
+   be anchored to its own horizontal grid line. 4 rows = 5 lines, and there
+   are exactly 5 nav items: one per gutter. */
+.site-nav,
+.site-nav ul {
+	display: contents;
+}
+.site-nav li {
+	grid-column: 5 / -1;
+	text-align: right;
+	/* half a gutter, so the labels sit comfortably in the gutter bands */
+	font-size: calc(var(--grid-gutter) * 0.5);
+	font-weight: 500;
+	list-style: none;
+}
+.site-nav li:nth-child(1) {
+	grid-row: 1;
+	align-self: start;
+	transform: translateY(-100%);
+}
+.site-nav li:nth-child(2) {
+	grid-row: 2;
+	align-self: start;
+	transform: translateY(-100%);
+}
+.site-nav li:nth-child(3) {
+	grid-row: 3;
+	align-self: start;
+	transform: translateY(-100%);
+}
+.site-nav li:nth-child(4) {
+	grid-row: 4;
+	align-self: start;
+	transform: translateY(-100%);
+}
+.site-nav li:nth-child(5) {
+	grid-row: 4;
+	align-self: end;
+	/* one line lower than the rest: down into the bottom margin band */
+	transform: translateY(var(--grid-gutter));
+}
+.site-nav a {
+	color: var(--header-fg, var(--fg));
+}
+.site-nav li.current a {
+	font-style: italic;
+	font-weight: 300;
+}
+
+main {
+	padding-top: 10rem;
+}
+body.is-home main {
+	padding-top: 0;
+}
+
+/* --- home page --------------------------------------------------------- */
+
+/* row 1 is left free for the wordmark, which sits in the fixed header on
+   this same 6x4 grid */
+.hero-image {
+	grid-column: 1 / 5;
+	grid-row: 2 / 5;
+	background: linear-gradient(180deg, #cfcac2 0%, #b9b3a8 100%);
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	padding-bottom: 1rem;
+}
+.hero-note {
+	color: rgba(255, 255, 255, 0.85);
+	font-size: 0.9rem;
+	letter-spacing: 0.02em;
+	margin: 0;
+}
+.hero-date {
+	grid-column: 1 / 3;
+	grid-row: 4;
+	align-self: end;
+	/* same bottom line as _stock, in the bottom margin band */
+	transform: translateY(var(--grid-gutter));
+	font-size: 0.85rem;
+	color: var(--fg-muted);
+	margin: 0;
+}
+
+/* --- inner section pages (placeholders for now) ------------------------ */
+
+.stub {
+	padding: 2rem;
+	max-width: 40rem;
+}
+.stub h1 {
+	font-weight: 400;
+	font-style: italic;
+	font-size: 1.5rem;
+	margin: 0 0 1rem;
+}

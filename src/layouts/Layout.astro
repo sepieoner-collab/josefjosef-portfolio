@@ -1,0 +1,53 @@
+---
+import "../styles/global.css";
+import GridOverlay from "../components/GridOverlay.astro";
+
+interface Props {
+	title: string;
+	section?: "bio" | "archi" | "works" | "academic" | "stock";
+	variant?: "home" | "inner";
+}
+
+const { title, section, variant = "inner" } = Astro.props;
+
+const sections = [
+	{ key: "bio", label: "bio", href: "/bio/" },
+	{ key: "archi", label: "archi", href: "/archi/" },
+	{ key: "works", label: "works", href: "/works/" },
+	{ key: "academic", label: "academic", href: "/academic/" },
+	{ key: "stock", label: "stock", href: "/stock/" },
+] as const;
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{title}</title>
+		<link rel="stylesheet" href="https://use.typekit.net/lhb7wgk.css">
+	</head>
+	<body class={variant === "home" ? "is-home" : "is-inner"}>
+		<GridOverlay />
+		<header class="site-header grid">
+			<div class="wordmark-block">
+				<a class="wordmark" href="/">josef josef</a>
+				<p class="tagline">studio / workshop</p>
+			</div>
+			<nav class="site-nav">
+				<ul>
+					{
+						sections.map((s) => (
+							<li class={s.key === section ? "current" : ""}>
+								<a href={s.href}>_{s.label}</a>
+							</li>
+						))
+					}
+				</ul>
+			</nav>
+		</header>
+		<main>
+			<slot />
+		</main>
+	</body>
+</html>
+

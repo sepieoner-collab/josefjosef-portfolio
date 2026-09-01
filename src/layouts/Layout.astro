@@ -4,7 +4,7 @@ import GridOverlay from "../components/GridOverlay.astro";
 
 interface Props {
 	title: string;
-	section?: "bio" | "archi" | "works" | "academic" | "stock";
+	section?: "bio" | "architecture" | "works" | "academic" | "stock" | "references";
 	variant?: "home" | "inner";
 }
 
@@ -12,10 +12,11 @@ const { title, section, variant = "inner" } = Astro.props;
 
 const sections = [
 	{ key: "bio", label: "bio", href: "/bio/" },
-	{ key: "archi", label: "archi", href: "/archi/" },
+	{ key: "architecture", label: "architecture", href: "/architecture/" },
 	{ key: "works", label: "works", href: "/works/" },
 	{ key: "academic", label: "academic", href: "/academic/" },
 	{ key: "stock", label: "stock", href: "/stock/" },
+	{ key: "references", label: "references", href: "/references/" },
 ] as const;
 ---
 
@@ -28,26 +29,27 @@ const sections = [
 	</head>
 	<body class={variant === "home" ? "is-home" : "is-inner"}>
 		<GridOverlay />
-		<header class="site-header grid">
-			<div class="wordmark-block">
-				<a class="wordmark" href="/">josef josef</a>
-				<p class="tagline">studio / workshop</p>
+		<header class="site-header">
+			<div class="grid">
+				<div class="wordmark-block">
+					<a class="wordmark" href="/">josef josef</a>
+					<p class="tagline">studio / workshop</p>
+				</div>
+				<nav class="site-nav">
+					<ul>
+						{
+							sections.map((s) => (
+								<li class={s.key === section ? "current" : ""}>
+									<a href={s.href}>_{s.label}</a>
+								</li>
+							))
+						}
+					</ul>
+				</nav>
 			</div>
-			<nav class="site-nav">
-				<ul>
-					{
-						sections.map((s) => (
-							<li class={s.key === section ? "current" : ""}>
-								<a href={s.href}>_{s.label}</a>
-							</li>
-						))
-					}
-				</ul>
-			</nav>
 		</header>
 		<main>
 			<slot />
 		</main>
 	</body>
 </html>
-

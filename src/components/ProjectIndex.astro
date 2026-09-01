@@ -1,0 +1,35 @@
+---
+interface Project {
+	name: string;
+	href?: string;
+	image?: string;
+	/** shown right-aligned on the caption line; used by _stock */
+	availability?: string;
+	/** lightens the photo and italicises the label */
+	sold?: boolean;
+}
+interface Props {
+	projects: Project[];
+}
+const { projects } = Astro.props;
+---
+
+<section class="screen">
+	<div class="grid">
+		<div class="project-scroll">
+			<div class="project-grid">
+				{
+					projects.map((p) => (
+						<a class={`project${p.sold ? " is-sold" : ""}`} href={p.href ?? "#"}>
+							<img src={p.image ?? "/placeholder-thumb.svg"} alt={p.name} />
+							<span class="project-caption">
+								<span class="project-name">{p.name}</span>
+								{p.availability && <span class="project-status">{p.availability}</span>}
+							</span>
+						</a>
+					))
+				}
+			</div>
+		</div>
+	</div>
+</section>

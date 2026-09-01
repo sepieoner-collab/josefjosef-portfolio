@@ -11,28 +11,31 @@
 	--fg: #3a3a3a; /* ~77% black - dark grey, not pure black */
 	--fg-muted: #767676;
 
-	/* --- modular grid ---
-	   6 columns x 4 rows of perfect squares. the gutter between squares,
+	/* --- modular grid ------------------------------------------------
+	   8 columns x 5 rows of perfect squares. the gutter between squares,
 	   AND the outer margin around the whole grid, are both exactly 1/4
-	   of one square's side — margin, gutter and square are one
-	   consistent proportional system, no arbitrary pixel values.
+	   of one square's side — margin, gutter and square are one single
+	   proportional system, with no arbitrary pixel values anywhere.
 
-	   the grid is sized to be as large as possible while still fitting
-	   entirely on screen: it fills either the full viewport width or the
-	   full viewport height (whichever is the tighter fit for its
-	   proportions), and sits flush to the top-left corner.
+	   the grid's PROPORTION never changes; only its size does. it scales
+	   to be as large as it can while still fitting the screen, and sits
+	   centred. on a 16:9 screen the height runs out first, so the grid
+	   fills the height and leaves a margin of empty space left and right.
 
 	   the math: with N units (columns or rows), gutter = square/4 and
 	   margin = gutter, so total size in "squares" = N + (N+1)/4
 	   (N squares + (N-1) inner gutters + 2 outer margins, all
-	   gutter-sized). 6 columns -> 6 + 7/4 = 7.75. 4 rows -> 4 + 5/4 = 5.25. */
-	--grid-cols: 6;
-	--grid-rows: 4;
-	--grid-square: min(calc(100vw / 7.75), calc(100vh / 5.25));
+	   gutter-sized). 8 columns -> 8 + 9/4 = 10.25. 5 rows -> 5 + 6/4 = 6.5. */
+	--grid-cols: 8;
+	--grid-rows: 5;
+	--grid-square: min(calc(100vw / 10.25), calc(100vh / 6.5));
 	--grid-gutter: calc(var(--grid-square) / 4);
 	--grid-margin: var(--grid-gutter);
-	--grid-width: calc(var(--grid-square) * 7.75);
-	--grid-height: calc(var(--grid-square) * 5.25);
+	--grid-width: calc(var(--grid-square) * 10.25);
+	--grid-height: calc(var(--grid-square) * 6.5);
+
+	/* Helvetica's descender depth, used to sit a baseline on a grid line */
+	--descender: 0.21em;
 }
 
 * {
@@ -43,6 +46,8 @@ html,
 body {
 	margin: 0;
 	padding: 0;
+	height: 100%;
+	overflow: hidden;
 }
 
 body {
@@ -64,7 +69,6 @@ img {
 
 /* --- grid containers --------------------------------------------------- */
 
-/* one full screen's worth of the modular grid: 6 columns x 4 rows of squares */
 .grid {
 	display: grid;
 	grid-template-columns: repeat(var(--grid-cols), var(--grid-square));
@@ -75,16 +79,20 @@ img {
 	padding: var(--grid-margin);
 }
 
+/* one full screen, with the grid centred in it */
 .screen {
 	min-height: 100vh;
+	display: grid;
+	place-items: center;
 }
 
-/* --- header: wordmark + nav, on the same grid as the page -------------- */
+/* --- header: wordmark, tagline and nav, on the same grid as the page --- */
 
 .site-header {
 	position: fixed;
-	top: 0;
-	left: 0;
+	inset: 0;
+	display: grid;
+	place-items: center;
 	z-index: 10;
 	pointer-events: none;
 }
@@ -92,130 +100,306 @@ img {
 	pointer-events: auto;
 }
 
-/* the block itself is transparent to the grid, so the wordmark and the
-   tagline can each be anchored to their own grid line */
+/* transparent to the grid, so each piece anchors to its own line */
 .wordmark-block {
 	display: contents;
 }
+
 .wordmark {
 	display: block;
-	grid-column: 1 / 5;
+	grid-column: 1 / 7;
 	grid-row: 1;
-	/* sized from the grid: at this size "josef josef" spans exactly the
-	   4 columns of its block, and it rescales with the grid automatically */
-	font-size: calc(var(--grid-square) * 0.995);
+	align-self: start;
+	/* the em box is exactly one square tall, so the wordmark fills row 1
+	   exactly and never reaches into the gutters above or below */
+	white-space: nowrap;
+	font-size: var(--grid-square);
 	font-weight: 700;
-	line-height: 0.92;
-	letter-spacing: -0.02em;
+	line-height: 1;
 	color: var(--header-fg, var(--fg));
 }
+
 .tagline {
 	grid-column: 1 / 5;
 	grid-row: 2;
 	align-self: start;
-	/* pull it up so its bottom edge rests on the lower line of the gutter */
-	transform: translateY(-100%);
-	text-align: right;
+	/* baseline on the same line the wordmark's foot rests on */
+	transform: translateY(calc(-100% + var(--descender)));
 	margin: 0;
-	font-size: calc(var(--grid-square) * 0.105);
+	line-height: 1;
+	font-size: calc(var(--grid-square) * 0.18);
 	color: var(--header-fg, var(--fg-muted));
 }
 
 /* the nav items become direct children of the header grid, so each one can
-   be anchored to its own horizontal grid line. 4 rows = 5 lines, and there
-   are exactly 5 nav items: one per gutter. */
+   be anchored to its own horizontal line. 5 rows give 5 row-top lines plus
+   the grid's bottom edge — exactly six lines for six labels. the labels
+   right-align to the outer margin line, further right than any content. */
 .site-nav,
 .site-nav ul {
 	display: contents;
 }
 .site-nav li {
-	grid-column: 5 / -1;
+	grid-column: 8 / -1;
+	margin-right: calc(var(--grid-margin) * -1);
 	text-align: right;
-	/* half a gutter, so the labels sit comfortably in the gutter bands */
-	font-size: calc(var(--grid-gutter) * 0.5);
-	font-weight: 500;
+	white-space: nowrap;
 	list-style: none;
+	line-height: 1;
+	font-size: calc(var(--grid-square) * 0.172);
+	font-weight: 700;
+}
+/* on inner pages the sections you are NOT in step back into light italic,
+   and the one you are in stands upright in bold */
+body.is-inner .site-nav li {
+	font-size: calc(var(--grid-square) * 0.167);
+	font-weight: 300;
+	font-style: italic;
+}
+body.is-inner .site-nav li.current {
+	font-size: calc(var(--grid-square) * 0.172);
+	font-weight: 700;
+	font-style: normal;
 }
 .site-nav li:nth-child(1) {
 	grid-row: 1;
 	align-self: start;
-	transform: translateY(-100%);
+	transform: translateY(calc(-100% + var(--descender)));
 }
 .site-nav li:nth-child(2) {
 	grid-row: 2;
 	align-self: start;
-	transform: translateY(-100%);
+	transform: translateY(calc(-100% + var(--descender)));
 }
 .site-nav li:nth-child(3) {
 	grid-row: 3;
 	align-self: start;
-	transform: translateY(-100%);
+	transform: translateY(calc(-100% + var(--descender)));
 }
 .site-nav li:nth-child(4) {
 	grid-row: 4;
 	align-self: start;
-	transform: translateY(-100%);
+	transform: translateY(calc(-100% + var(--descender)));
 }
 .site-nav li:nth-child(5) {
-	grid-row: 4;
+	grid-row: 5;
+	align-self: start;
+	transform: translateY(calc(-100% + var(--descender)));
+}
+.site-nav li:nth-child(6) {
+	grid-row: 5;
 	align-self: end;
-	/* one line lower than the rest: down into the bottom margin band */
-	transform: translateY(var(--grid-gutter));
+	/* the sixth line: the grid's bottom edge, out in the margin band */
+	transform: translateY(calc(var(--grid-margin) + var(--descender)));
 }
 .site-nav a {
 	color: var(--header-fg, var(--fg));
 }
-.site-nav li.current a {
-	font-style: italic;
-	font-weight: 300;
-}
 
-main {
-	padding-top: 10rem;
-}
-body.is-home main {
-	padding-top: 0;
-}
+
+
 
 /* --- home page --------------------------------------------------------- */
 
-/* row 1 is left free for the wordmark, which sits in the fixed header on
-   this same 6x4 grid */
-.hero-image {
-	grid-column: 1 / 5;
-	grid-row: 2 / 5;
-	background: linear-gradient(180deg, #cfcac2 0%, #b9b3a8 100%);
-	display: flex;
-	align-items: flex-end;
-	justify-content: center;
-	padding-bottom: 1rem;
+/* the LIMIT the cover photo must fit inside: columns 1-7, rows 2-5.
+   the photo scales up until one of its sides meets this boundary, keeping
+   its own aspect ratio, and anchors to the bottom-left corner. */
+.hero-photo {
+	grid-column: 1 / 8;
+	grid-row: 2 / 6;
 }
-.hero-note {
-	color: rgba(255, 255, 255, 0.85);
-	font-size: 0.9rem;
-	letter-spacing: 0.02em;
-	margin: 0;
+/* contain: the photo grows until one of its sides meets the limit, keeps its
+   own aspect ratio, and anchors to the bottom-left corner of the area */
+.hero-photo img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	object-position: left bottom;
 }
+
 .hero-date {
 	grid-column: 1 / 3;
-	grid-row: 4;
+	grid-row: 5;
 	align-self: end;
-	/* same bottom line as _stock, in the bottom margin band */
-	transform: translateY(var(--grid-gutter));
-	font-size: 0.85rem;
-	color: var(--fg-muted);
+	/* baseline on the grid's bottom line, sharing it with _references */
+	transform: translateY(calc(var(--grid-margin) + var(--descender)));
 	margin: 0;
+	line-height: 1;
+	font-size: calc(var(--grid-square) * 0.129);
+	color: var(--fg-muted);
 }
 
 /* --- inner section pages (placeholders for now) ------------------------ */
 
-.stub {
-	padding: 2rem;
-	max-width: 40rem;
+/* on inner pages the wordmark steps back: one GUTTER tall instead of one
+   square, aligned to the outer margin line, baseline on row 1's upper line,
+   and no tagline */
+body.is-inner .wordmark {
+	grid-column: 1 / 5;
+	grid-row: 1;
+	align-self: start;
+	transform: translateY(calc(-100% + var(--descender)));
+	margin-left: calc(var(--grid-margin) * -1);
+	font-size: var(--grid-gutter);
 }
-.stub h1 {
-	font-weight: 400;
-	font-style: italic;
-	font-size: 1.5rem;
-	margin: 0 0 1rem;
+body.is-inner .tagline {
+	display: none;
+}
+
+/* --- project index (_architecture, _works, _academic) ------------------ */
+
+/* only this region scrolls: columns 1-6, from row 1's upper line down to the
+   bottom of the screen. wordmark, nav and columns 7-8 stay put. */
+.project-scroll {
+	grid-column: 1 / 7;
+	grid-row: 1 / -1;
+	margin-bottom: calc(var(--grid-margin) * -1);
+	overflow-y: auto;
+	overflow-x: hidden;
+	/* the clipping edge is pushed a hair past the last column and pulled back
+	   by the same amount, so the italic "sold" is not shaved off while the
+	   columns stay exactly where the grid puts them */
+	padding-right: calc(var(--grid-square) * 0.02);
+	margin-right: calc(var(--grid-square) * -0.02);
+	scrollbar-width: none;
+}
+.project-scroll::-webkit-scrollbar {
+	display: none;
+}
+.project-grid {
+	display: grid;
+	grid-template-columns: repeat(6, var(--grid-square));
+	grid-auto-rows: var(--grid-square);
+	gap: var(--grid-gutter);
+	padding-bottom: var(--grid-gutter);
+}
+/* a thumbnail and its name are ONE element, so the pair can never come
+   apart: two squares across, two down, name in the gutter below */
+.project {
+	grid-column: span 2;
+	grid-row: span 2;
+	position: relative;
+	display: block;
+}
+.project img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+/* the caption spans the thumbnail's full width: name on the left edge,
+   availability on the right edge, sharing one baseline in the gutter */
+.project-caption {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	display: flex;
+	justify-content: space-between;
+	gap: var(--grid-gutter);
+	/* baseline lands 0.115 square below the thumbnail, as in the sketch */
+	margin-top: calc(var(--grid-square) * 0.0167);
+	line-height: 1;
+	white-space: nowrap;
+	font-size: calc(var(--grid-square) * 0.125);
+	font-weight: 300;
+	color: var(--fg);
+}
+
+/* sold pieces stay on show but recede as a whole - photo and caption
+   together lighten to 80%, with the label left upright */
+.project.is-sold {
+	opacity: 0.8;
+}
+
+.page-area {
+	grid-column: 1 / 8;
+	grid-row: 2 / 6;
+	display: flex;
+	align-items: flex-end;
+	/* provisional: marks the working area until each page is designed */
+	outline: 1px dashed rgba(58, 58, 58, 0.25);
+}
+.page-note {
+	margin: 0 0 0.5rem 0.5rem;
+	font-size: calc(var(--grid-square) * 0.129);
+	color: var(--fg-muted);
+}
+
+/* --- dev-only grid overlay (delete with the component before launch) --- */
+
+.grid-overlay-wrap {
+	position: fixed;
+	inset: 0;
+	z-index: 9998;
+	pointer-events: none;
+	display: none;
+	place-items: center;
+}
+body.show-grid .grid-overlay-wrap {
+	display: grid;
+}
+.grid-overlay__cell {
+	outline: 1px solid rgba(220, 40, 40, 0.55);
+}
+.grid-panel {
+	position: fixed;
+	bottom: 1rem;
+	left: 1rem;
+	z-index: 9999;
+	display: none;
+	flex-direction: column;
+	gap: 0.4rem;
+	padding: 0.75rem 0.9rem;
+	background: rgba(17, 17, 17, 0.9);
+	color: #fff;
+	border-radius: 4px;
+	font: 0.7rem/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+	pointer-events: auto;
+}
+body.show-grid .grid-panel {
+	display: flex;
+}
+.grid-panel__row {
+	display: grid;
+	grid-template-columns: 4.5rem 8rem auto;
+	align-items: center;
+	gap: 0.5rem;
+}
+.grid-panel__row input {
+	width: 100%;
+}
+.grid-panel__readout {
+	margin: 0.2rem 0 0;
+	padding-top: 0.5rem;
+	border-top: 1px solid rgba(255, 255, 255, 0.25);
+	opacity: 0.85;
+	user-select: all;
+}
+.grid-panel__reset {
+	align-self: flex-start;
+	font: inherit;
+	background: transparent;
+	color: #fff;
+	border: 1px solid rgba(255, 255, 255, 0.4);
+	border-radius: 3px;
+	padding: 0.25rem 0.5rem;
+	cursor: pointer;
+}
+.grid-toggle {
+	position: fixed;
+	bottom: 1rem;
+	right: 1rem;
+	z-index: 9999;
+	font: 0.7rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+	padding: 0.5rem 0.7rem;
+	background: #111;
+	color: #fff;
+	border: none;
+	border-radius: 3px;
+	opacity: 0.55;
+	cursor: pointer;
+	pointer-events: auto;
+}
+.grid-toggle:hover {
+	opacity: 1;
 }

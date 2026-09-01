@@ -1,11 +1,14 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import ProjectIndex from "../../components/ProjectIndex.astro";
+
+// placeholder entries until the real pieces arrive; sold items stay on show
+const projects = Array.from({ length: 14 }, (_, i) => {
+	const sold = i % 3 === 2;
+	return { name: "item name", sold, availability: sold ? "sold" : "available" };
+});
 ---
 
 <Layout title="josef josef — stock" section="stock">
-	<div class="stub">
-		<h1>_stock</h1>
-		<p>Coming soon.</p>
-	</div>
+	<ProjectIndex projects={projects} />
 </Layout>
-

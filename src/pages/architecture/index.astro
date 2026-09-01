@@ -1,0 +1,11 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ProjectIndex from "../../components/ProjectIndex.astro";
+
+// placeholder entries until the real projects arrive
+const projects = Array.from({ length: 14 }, () => ({ name: "project name" }));
+---
+
+<Layout title="josef josef — architecture" section="architecture">
+	<ProjectIndex projects={projects} />
+</Layout>

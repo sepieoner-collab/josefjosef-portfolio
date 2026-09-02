@@ -124,15 +124,48 @@ scale has a floor.
 Every size is a plain fraction of one square. Named in `:root`:
 
 ```css
---type-body: max(11.5px, calc(var(--grid-square) / 10))   /* running text, captions */
---type-note: max(13px,   calc(var(--grid-square) / 8))    /* thumbnail captions */
---type-meta: max(14px,   calc(var(--grid-square) / 6.9))  /* dates, bio lines */
+--type-nav-ratio:  0.172
+--type-body-ratio: calc(var(--type-nav-ratio) * 2 / 3)
+--type-nav:  calc(var(--grid-square) * var(--type-nav-ratio))   /* nav labels */
+--type-body: calc(var(--grid-square) * var(--type-body-ratio))  /* running text */
+--type-note: calc(var(--grid-square) / 8)      /* thumbnail captions */
+--type-meta: calc(var(--grid-square) / 6.9)    /* dates */
 ```
 
-The `max()` is a readability floor that only engages on a very short window.
-To resize all body text, change one number: `/ 10`. Bigger = smaller divisor
-(`/ 9`, `/ 8`); smaller = larger divisor. Josef chose `/ 10` on 2 Sept, down
-from `/ 9`.
+Running text — the CV, project descriptions, photo captions — is **two
+thirds of the nav label**, at weight 300, and they are all one size and one
+weight. Settled 2 Sept. It is written against the nav ratio rather than as
+its own decimal so the relationship survives: change the nav and the running
+text follows. There are **no px floors** on the type any more — a floor breaks
+the fixed ratio. The grid floor below does that job instead.
+
+**Type stays grid-derived. Do not pin it to a fixed pt or px size.** Tried on
+2 Sept and reverted the same hour: with fixed type and a shrinking grid, text
+outgrows its column, and the bio's longest CV row wrapped below a 1472 × 946
+window — larger than the laptop it is written on.
+
+### The floor, and scrolling
+
+The page stops shrinking when the smallest text on the site — the running
+text — would fall below **8pt**, and the window scrolls from there:
+
+```css
+--grid-square-min: calc(8pt / var(--type-body-ratio));   /* ≈ 93px */
+--grid-square: max(var(--grid-square-min), min(100vw / 10.5, 100vh / 6.75));
+```
+
+93px of square is a window of roughly **977 × 628**. Measured at that square,
+running text lands on exactly 8.00pt and the nav on 12pt.
+
+Two things make the scrolling work, and both are load-bearing:
+
+- `body` is `width: max-content; min-width: 100%` and `position: relative`,
+  so the document is as wide as the grid when the grid outgrows the window.
+- **`.site-header` is `position: absolute`, not `fixed`.** Fixed would pin the
+  wordmark and nav to the window while the content scrolled away underneath,
+  breaking the one rule the whole site rests on — that everything sits on the
+  same grid. Verified by scrolling: content and wordmark move together, to
+  the same pixel.
 
 Font: **Helvetica LT Pro** via Adobe Fonts (Typekit kit `lhb7wgk`), loaded in
 `Layout.astro`. Weights 300 / 400 / 700 plus italics. It contains **no arrow or
@@ -273,3 +306,29 @@ upload script, then content section by section in nav order.
 cd ~/Documents/josefjosef-portfolio
 npm run dev        # http://localhost:4321
 ```
+
+**Whenever Josef has to use the Terminal, spell it out** — which window, and
+that commands go one line at a time with Enter after each. He asked for this
+explicitly on 2 Sept. Never just paste a block of commands and assume the
+mechanics are obvious.
+
+Use a **second** Terminal window for everything else. Commands typed into the
+window running the dev server are never executed — they sit in its input and
+look like they worked. This wasted a whole cycle on 2 Sept: a
+`rm -f .git/index.lock` typed there did nothing, and the lock jammed every
+git command for hours afterwards.
+
+## Saving work (Josef runs these; see hard rule 2)
+
+Repo: `github.com/sepieoner-collab/josefjosef-portfolio`, branch `main`.
+
+```
+cd ~/Documents/josefjosef-portfolio
+rm -f .git/index.lock     # only if git complains the lock exists
+git add -A
+git commit -m "what changed, in plain words"
+git push origin main
+```
+
+The lock file keeps coming back because a Claude session tried to run git.
+Deleting it is safe as long as no git command is genuinely running.

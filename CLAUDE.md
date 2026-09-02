@@ -278,8 +278,11 @@ anything else, they affect whether today's work is even safe:**
 - Still open: the project description's line-height was opened from solid to
   1.35 without being asked — keep it, or put it back?
 
-- Real: home, bio, `/architecture/mysina/` (14 photos)
-- Placeholders: 13 more architecture slots, all of works / academic / stock,
+- Real: home, bio, `/architecture/mysina/` (14 photos),
+  `/architecture/sauna-in-caravan/` (20 pictures — renders, a vector plan,
+  photographs; **still needs dates, a description, and a decision on whether
+  it belongs in architecture or works**)
+- Placeholders: 12 more architecture slots, all of works / academic / stock,
   27 references
 - Data layer moved from a single `projects.ts` array to one `.md` file per
   project under `src/content/projects/` (Astro content collections) — see

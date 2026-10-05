@@ -22,9 +22,13 @@ solution over the clever one, every time.** Comment the code so he can read it.
    file on disk is correct. `vite.server.watch.usePolling` does not fix it.
    `global.css` updates live. This cost hours once; do not rediscover it.
 
-2. **Never run git.** Every git command through the bridge creates
-   `.git/index.lock` and then cannot delete it, which jams the next command.
-   Write the commands out for Josef and let him run them in Terminal.
+2. **Never run git. Not even `git status`.** Every git command through the
+   bridge creates `.git/index.lock` and then cannot delete it, which jams the
+   next command Josef runs. `git log` is safe because it does not touch the
+   index; `status`, `add`, `commit` and `diff` are not. Broken again 5 Oct by
+   running `git status` to "just have a look" — it cost Josef a line of
+   typing. To see what changed, read the files; to see what is untracked,
+   `find`. Write every git command out for Josef and let him run it.
 
 3. **No delete permission** on the connected folder. `rm` fails with
    "Operation not permitted". To remove something, `mv` it into `_to_delete/`
@@ -91,7 +95,13 @@ solution over the clever one, every time.** Comment the code so he can read it.
 It sizes the pictures, keeps colour profiles, flattens transparency onto the
 page grey, converts film to muted MP4 with a poster, copies SVG untouched,
 orders by the numbers in the filenames read AS numbers, and writes the `.md`.
-Read the file — it is commented and explains every rule it follows.
+Read the file — it is commented and explains every rule it follows. It
+finishes by calling `tools/make-thumbs.py`, which writes the small copy the
+section wall uses. If a wall picture ever changes — Josef reorders the
+pictures and a different one lands first — run `python3 tools/make-thumbs.py
+<slug>` and the wall catches up. Forgetting it is not fatal: the data layer
+checks whether the thumbnail is there and quietly falls back to the full
+picture.
 
 **A picture's words live in its filename, nowhere else** (settled 3 Sept).
 `NN words about it.jpg` — the number orders, the words become the caption and
@@ -359,6 +369,8 @@ Built and working:
 - section walls for architecture, works and academic read real projects and
   sort on `order:`
 - `tools/import-project.py` — one command per project
+- `tools/make-thumbs.py` — the wall-sized copy of each project's first
+  picture; the importer runs it, so it is normally never run by hand
 - references and stock walls are still placeholder grids
 
 Real content, five projects:

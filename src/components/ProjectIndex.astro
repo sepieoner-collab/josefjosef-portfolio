@@ -21,7 +21,7 @@ const { projects } = Astro.props;
 				{
 					projects.map((p) => (
 						<a class={`project${p.sold ? " is-sold" : ""}`} href={p.href ?? "#"}>
-							<img src={p.image ?? "/placeholder-thumb.svg"} alt={p.name} />
+							<img src={p.image ?? "/placeholder-thumb.svg"} alt={p.name} loading="lazy" decoding="async" />
 							<span class="project-caption">
 								<span class="project-name">{p.name}</span>
 								{p.availability && <span class="project-status">{p.availability}</span>}

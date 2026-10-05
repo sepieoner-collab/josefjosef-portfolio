@@ -24,3 +24,6 @@ npm-debug.log*
 
 # incoming originals (never deployed)
 _incoming/
+
+# things waiting for Josef to delete (I cannot remove files myself)
+_to_delete/

@@ -8,7 +8,7 @@ import { bySection } from "../../data/projects";
 const real = bySection("architecture").map((p) => ({
 	name: p.name,
 	href: `/architecture/${p.slug}/`,
-	image: p.photos[0].src,
+	image: p.thumb,
 }));
 const projects = [
 	...real,

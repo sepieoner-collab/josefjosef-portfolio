@@ -23,6 +23,8 @@ Rules it follows, all of them deliberate:
 * FILM is re-encoded to MP4 at 720 wide and given a poster frame. It plays
   muted and looping on the site — browsers refuse to autoplay sound.
 * SVG is copied untouched. Vector stays vector.
+* THE WALL THUMBNAIL is made at the end, by tools/make-thumbs.py, so the
+  section index does not download a 900kB photograph to draw it small.
 * NOTHING IS DELETED. Re-running overwrites, it never removes.
 """
 
@@ -204,6 +206,11 @@ def main():
     md_path = os.path.join(ROOT, "src", "content", "projects", slug + ".md")
     if not args.dry_run:
         open(md_path, "w", encoding="utf-8").write("\n".join(md) + "\n")
+
+    if not args.dry_run:
+        subprocess.run([sys.executable,
+                        os.path.join(ROOT, "tools", "make-thumbs.py"), slug],
+                       check=True)
 
     print(f"\n{len(entries)} items -> {slug}")
     print(f"{tin/1048576:.1f}M in, {tout/1048576:.1f}M out" if tout else "(dry run)")

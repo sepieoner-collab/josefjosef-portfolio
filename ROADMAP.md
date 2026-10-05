@@ -44,11 +44,15 @@ nothing is live yet.
 
 ## 3. Performance, before going live
 
-- [ ] **Thumbnails.** The section walls currently download the full-size
-      photograph and display it at 254 pixels. Measured 10 Sept: 4.66 MB for
-      four projects, which works out at **16.3 MB per wall once there are
-      fourteen**. The importer should make a small thumbnail alongside each
-      project's first picture, and the wall should use that.
+- [x] **Thumbnails. Done 5 Oct.** The walls were downloading full-size
+      photographs to draw them at about 410 pixels: 4.66 MB for four
+      projects, 16.3 MB per wall at fourteen. `tools/make-thumbs.py` now
+      writes an 800px copy of each project's FIRST picture into
+      `public/projects/<slug>/thumbs/`, the importer runs it, and the wall
+      uses it. Four projects now weigh **0.6 MB instead of 4.66** — about
+      **2.1 MB per wall at fourteen**, an 87% cut. Only the wall picture gets
+      a thumbnail: forty projects times twenty would have been 100 MB of
+      files no page ever asks for. The wall images are lazy-loaded too.
 - [ ] Check what a project page weighs on a phone connection
 
 ## 4. The missing furniture

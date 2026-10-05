@@ -2,7 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import { bySection, relatedTo, type Project } from "../../data/projects";
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
 	return bySection("architecture").map((project) => ({
 		params: { slug: project.slug },
 		props: { project },
@@ -11,15 +11,35 @@ export function getStaticPaths() {
 
 const { project } = Astro.props as { project: Project };
 const related = relatedTo(project);
+const first = project.photos[0];
+// a picture and a film are shown by the same viewer; the file extension is
+// the only thing that decides which element is used
+const isFilm = (src: string) => /\.(mp4|webm)$/i.test(src);
+const poster = (src: string) => src.replace(/\.(mp4|webm)$/i, ".jpg");
 ---
 
 <Layout title={`josefjosef — ${project.name}`} section="architecture">
 	<section class="screen">
 		<div class="grid">
-			<p class="proj-name">{project.name}</p>
+			<button type="button" class="proj-name" id="proj-name">{project.name}</button>
 
 			<div class="proj-stage">
-				<img id="proj-img" src={project.photos[0].src} alt={project.photos[0].caption ?? project.name} />
+				<img
+					id="proj-img"
+					src={isFilm(first.src) ? undefined : first.src}
+					alt={first.caption ?? project.name}
+					style={isFilm(first.src) ? "display:none" : ""}
+				/>
+				<video
+					id="proj-video"
+					muted
+					loop
+					playsinline
+					preload="metadata"
+					style={isFilm(first.src) ? "" : "display:none"}
+					src={isFilm(first.src) ? first.src : undefined}
+					poster={isFilm(first.src) ? poster(first.src) : undefined}
+				></video>
 			</div>
 
 			<button type="button" class="zone zone-prev" data-step="-1" aria-label="Previous photo"></button>
@@ -38,13 +58,15 @@ const related = relatedTo(project);
 					))}
 				</p>
 			)}
-			<p class="proj-caption" id="proj-caption">{project.photos[0].caption}</p>
+			{project.role && <p class="proj-role">{project.role}</p>}
+			<p class="proj-caption" id="proj-caption">{first.caption}</p>
 			<p class="proj-dates">{project.dates}</p>
 		</div>
 	</section>
 
 	<div class="proj-full" id="proj-full">
-		<img id="full-img" src={project.photos[0].src} alt={project.photos[0].caption ?? project.name} />
+		<img id="full-img" alt="" />
+		<video id="full-video" muted loop playsinline preload="none" style="display:none"></video>
 		<button type="button" class="zone zone-prev" data-step="-1" aria-label="Previous photo"></button>
 		<button type="button" class="zone zone-full" data-full="1" aria-label="Toggle fullscreen"></button>
 		<button type="button" class="zone zone-next" data-step="1" aria-label="Next photo"></button>
@@ -53,31 +75,75 @@ const related = relatedTo(project);
 	<script is:inline define:vars={{ photos: project.photos }}>
 		let i = 0;
 		const img = document.getElementById("proj-img");
+		const vid = document.getElementById("proj-video");
 		const full = document.getElementById("full-img");
+		const fullVid = document.getElementById("full-video");
 		const cap = document.getElementById("proj-caption");
+
+		const isFilm = (src) => /\.(mp4|webm)$/i.test(src);
+		const posterFor = (src) => src.replace(/\.(mp4|webm)$/i, ".jpg");
+
+		// a film autoplays, silently and on a loop — browsers only allow
+		// autoplay when the sound is off, so it behaves like a moving picture
+		const fill = (imgEl, vidEl, p) => {
+			if (isFilm(p.src)) {
+				imgEl.style.display = "none";
+				vidEl.style.display = "block";
+				vidEl.muted = true;
+				if (!vidEl.src.endsWith(p.src)) {
+					vidEl.poster = posterFor(p.src);
+					vidEl.src = p.src;
+				}
+			} else {
+				vidEl.pause();
+				vidEl.style.display = "none";
+				imgEl.style.display = "block";
+				imgEl.src = p.src;
+				// the caption doubles as the alt text, so both move together
+				imgEl.alt = p.caption ?? "";
+			}
+		};
+
+		// only whichever viewer you are actually looking at plays
+		const playVisible = () => {
+			const isFull = document.body.classList.contains("is-full");
+			const on = isFull ? fullVid : vid;
+			const off = isFull ? vid : fullVid;
+			off.pause();
+			if (on.style.display !== "none") on.play().catch(() => {});
+		};
 
 		const show = (n) => {
 			i = (n + photos.length) % photos.length;
 			const p = photos[i];
-			img.src = p.src;
-			full.src = p.src;
-			// the caption doubles as the alt text, so both move together
-			img.alt = p.caption ?? "";
-			full.alt = p.caption ?? "";
+			fill(img, vid, p);
+			fill(full, fullVid, p);
 			cap.textContent = p.caption ?? "";
+			playVisible();
 		};
+
+		show(0);
+
+		// the project's name takes you back to the first picture
+		document.getElementById("proj-name").addEventListener("click", () => show(0));
 
 		document.querySelectorAll("[data-step]").forEach((el) =>
 			el.addEventListener("click", () => show(i + Number(el.dataset.step)))
 		);
 		document.querySelectorAll("[data-full]").forEach((el) =>
-			el.addEventListener("click", () => document.body.classList.toggle("is-full"))
+			el.addEventListener("click", () => {
+				document.body.classList.toggle("is-full");
+				playVisible();
+			})
 		);
 		// arrow keys, and escape to leave fullscreen
 		window.addEventListener("keydown", (e) => {
 			if (e.key === "ArrowRight") show(i + 1);
 			if (e.key === "ArrowLeft") show(i - 1);
-			if (e.key === "Escape") document.body.classList.remove("is-full");
+			if (e.key === "Escape") {
+				document.body.classList.remove("is-full");
+				playVisible();
+			}
 		});
 	</script>
 </Layout>

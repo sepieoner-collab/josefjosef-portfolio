@@ -2,6 +2,7 @@
 section: architecture
 name: Sauna in a caravan
 dates: TODO — tell me the years
+role: "TODO — how you were involved: designed it, built it, both, with whom."
 photos:
   - src: /projects/sauna-in-caravan/01-rest-room-to-sauna.jpg
     caption: "the rest room, looking through to the sauna"
@@ -41,7 +42,9 @@ photos:
     caption: "water on the larch"
   - src: /projects/sauna-in-caravan/19-shower-in-use.jpg
     caption: "the shower, in use"
-  - src: /projects/sauna-in-caravan/20-table-at-the-workshop.jpg
+  - src: /projects/sauna-in-caravan/20-sauna-in-use.mp4
+    caption: "the sauna in use"
+  - src: /projects/sauna-in-caravan/21-table-at-the-workshop.jpg
     caption: "the table finished, in the yard at the workshop"
 ---
 

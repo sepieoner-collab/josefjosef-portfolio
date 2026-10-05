@@ -1,9 +1,19 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ProjectIndex from "../../components/ProjectIndex.astro";
+import { bySection } from "../../data/projects";
 
-// placeholder entries until the real projects arrive
-const projects = Array.from({ length: 14 }, () => ({ name: "project name" }));
+// real projects first, in the order their `order:` gives them; the rest of the
+// wall stays as placeholders until there is something to put there
+const real = bySection("academic").map((p) => ({
+	name: p.name,
+	href: `/academic/${p.slug}/`,
+	image: p.photos[0].src,
+}));
+const projects = [
+	...real,
+	...Array.from({ length: Math.max(0, 14 - real.length) }, () => ({ name: "project name" })),
+];
 ---
 
 <Layout title="josefjosef — academic" section="academic">

@@ -86,6 +86,48 @@ solution over the clever one, every time.** Comment the code so he can read it.
 
 ## How Josef works (this method works — keep using it)
 
+**Importing a project is one command, not a conversation.**
+`python3 tools/import-project.py "<folder in _incoming>" [--section works]`.
+It sizes the pictures, keeps colour profiles, flattens transparency onto the
+page grey, converts film to muted MP4 with a poster, copies SVG untouched,
+orders by the numbers in the filenames read AS numbers, and writes the `.md`.
+Read the file — it is commented and explains every rule it follows.
+
+**A picture's words live in its filename, nowhere else** (settled 3 Sept).
+`NN words about it.jpg` — the number orders, the words become the caption and
+the alt text. The folder's text file carries only the project's name, date,
+role and description; if it also lists pictures by number, IGNORE that list
+and say why. Josef tried it once and the numbers did not line up with the
+pictures, which is the whole argument against a second place to store a name.
+
+**Do not write captions by looking at the pictures.** Josef asked for this on
+3 Sept: captions come from the filenames and he replaces them with real words
+later. Inventing descriptions gives him more to check, not less, and there
+are many projects still to come. Same for descriptions and role lines — leave
+them as TODO unless he supplies the words.
+
+**Illustrator `.svgz` can be far too heavy to serve as vector, and the right
+fix is to ask Josef for a JPEG.** Ny-Ålesund's A0 sheets decompress to 45 MB
+with **half a million `<line>` elements** each — seven times the sauna
+floorplan, which was already the limit. Rasterising is unavoidable, and
+**his own export beats anything we can render**: A0 at 300dpi (14032 × 9922)
+downscaled to 2400 averages the hairlines into visible grey, where rendering
+straight to 2400 drops them and the sheet goes faint. So: ask, don't render.
+
+If you ever must render one yourself, know that the device VM has **no working
+SVG renderer** — ImageMagick's built-in one silently returns a blank white
+page (mean=255), and rsvg-convert, inkscape and cairosvg are all absent. Only
+Chromium in the cloud container can do it (Playwright is installed there).
+
+Two things make huge exports cheap to process, both already in the importer:
+`Image.MAX_IMAGE_PIXELS = None` (PIL refuses >89 MP as a "decompression bomb";
+A0 at 300dpi is 139 MP) and `im.draft()` before resizing, which lets libjpeg
+decode at 1/4 size — 30 MB of A0 sheets processed in 2.6 seconds.
+
+**White backgrounds on drawings are deliberate.** Matching a render to the
+page grey (230,230,230) looks good and he knows how; it is time-consuming and
+not always wanted. Stop offering it.
+
 He draws a measured sketch in ArchiCAD and exports it as a **16:9 PDF with real
 vector lines and real text**. Extract the exact geometry with `pdfplumber`,
 build to those measurements, then verify in the browser. Do not eyeball it, and
@@ -213,6 +255,22 @@ public/             served at the site root
 
 Nav order: bio, architecture, works, academic, stock, references.
 
+### The order projects appear in
+
+`order:` in the frontmatter, a plain number — lower comes first. Projects
+without one fall to the end of their section, alphabetically, so an unnumbered
+project can never jump the queue. `bySection()` does the sorting; the section
+index pages just render what it returns. The importer writes it from
+`--order N`.
+
+A number is a *position among the real projects*, not a tile on the wall: with
+only `order: 2` present, that project sits in the first tile until an
+`order: 1` arrives and displaces it.
+
+**All four section walls (architecture, works, academic) read real projects**
+now — `academic` and `works` were still hard-coded placeholder grids until
+5 Sept.
+
 ### The data layer
 
 Each project is one file: `src/content/projects/<slug>.md`. Frontmatter holds
@@ -248,58 +306,77 @@ side links both. Photos are numbered `01-`…`14-` so the filename carries the
 viewing order. **Each caption is also the photo's alt text** — one string, two
 jobs; write it as a plain description of what is in the frame.
 
+### The right-hand column (measured from the 2 Sept sketch)
+
+```
+row 2-4   .proj-about    the project description, top-aligned
+row 4     .proj-related  "see also", at the foot of the description
+row 5     .proj-role     how Josef was involved — TOP of row 5
+row 5     .proj-caption  the photo caption — BOTTOM of row 5
+```
+
+`.proj-about` and `.proj-role` are set out identically (line-height 1.35,
+top-aligned, no transform); `.proj-caption` keeps line-height 1 and the
+descender transform, because it sits its ink on the row's bottom line.
+**Don't "unify" the caption's line-height with the other two** — extra leading
+on a bottom-aligned single line pushes its baseline off the grid.
+
+The three `[slug].astro` files (architecture, works, academic) are byte-for-byte
+identical apart from the section name. Change one, change all three.
+
 ### The project page viewer
 
 Three invisible `<button class="zone">` elements over the picture: left steps
 back, right steps forward, the middle goes fullscreen. They are real buttons so
 a keyboard can reach them; all default button styling is stripped, and the
 focus ring is `:focus-visible` only, so a mouse never sees it. Arrow keys and
-Escape also work. Photos are `object-fit: contain` anchored
+Escape also work. **Clicking the project's name returns you to the first
+picture** — it is a real `<button>` with every default stripped, so it still
+reads as plain text; `justify-self: start` keeps the hit area on the words
+rather than the whole column. Photos are `object-fit: contain` anchored
 `center bottom` — landscape and portrait, page and fullscreen alike.
+
+A **film** is just another entry in `photos:` whose src ends `.mp4`; the
+viewer swaps a `<video>` in for the `<img>`. It autoplays **muted** and loops,
+because browsers will not autoplay audible media — so it reads as a moving
+photograph. Its poster is the same filename with `.jpg`. Only the viewer you
+are actually looking at plays; the other is paused.
 
 ---
 
-## State (2 Sept 2026)
+## State (10 Sept 2026)
 
-Design is **locked and approved**. Content is mostly not uploaded.
+Design is **locked and approved**. Nothing is deployed yet; there is no live
+site and no email on the domain.
 
-**Carried over from the 1 Sept handover note, not yet done — do these before
-anything else, they affect whether today's work is even safe:**
-- Stale `.git/index.lock` may still be sitting in the repo from a jammed git
-  command. Josef needs to run, in his own Terminal: `rm -f .git/index.lock`
-- `_to_delete/` still has five old files parked in it (grid overlay
-  component, unused placeholder graphic, three orphaned Myšina photos from
-  before the numbering changed). Nothing on the site references them —
-  Josef can delete that whole folder once he's glanced in it.
-- The repo was **6 commits ahead of GitHub, never pushed** as of 1 Sept —
-  confirm current count and push. This is the only backup of finished work
-  off Josef's laptop; don't let it sit unpushed for long.
-- Body text size: **answered 2 Sept** — Josef went smaller, `/ 9` → `/ 10`.
-- Still open: the project description's line-height was opened from solid to
-  1.35 without being asked — keep it, or put it back?
+**`ROADMAP.md` is the list of what remains — read it before planning
+anything.** Do not keep a second copy of that list here; one place only.
 
-- Real: home, bio, `/architecture/mysina/` (14 photos),
-  `/architecture/sauna-in-caravan/` (20 pictures — renders, a vector plan,
-  photographs; **still needs dates, a description, and a decision on whether
-  it belongs in architecture or works**)
-- Placeholders: 12 more architecture slots, all of works / academic / stock,
-  27 references
-- Data layer moved from a single `projects.ts` array to one `.md` file per
-  project under `src/content/projects/` (Astro content collections) — see
-  "The data layer" above. Only `mysina.md` exists so far, carried over with
-  no content change. **Verified in the browser 2 Sept**: 14 photos in order,
-  description 2382 chars (byte-identical to the old array), 7 paragraphs,
-  `white-space: pre-line` intact, body text 18.27px.
-- Missing: `academic/[slug].astro` (copy `works/[slug].astro`, change one word)
-- Not started: mobile layout, favicon design, meta description, share preview,
-  domain `josefjosef.cz`, deployment
+Built and working:
+- home, bio, 404
+- the project page: viewer with keyboard and click zones, fullscreen, film
+  support, the name as a button back to the first picture
+- section walls for architecture, works and academic read real projects and
+  sort on `order:`
+- `tools/import-project.py` — one command per project
+- references and stock walls are still placeholder grids
 
-Deliberately deferred until all content is real: **mobile layout** (it must
-react to real material) and **favicon / meta / share preview** (Josef asked to
-be reminded before the site goes live).
+Real content, five projects:
+- `/architecture/mysina/` (14) — complete except a `role:` line
+- `/architecture/sauna-in-caravan/` (21, includes a film) — **needs dates,
+  role, description, and a decision: architecture or works?**
+- `/architecture/sonas-apartment/` (17) — **needs dates, role, description**
+- `/architecture/srdov-rural-dwelling/` (30) — text is Josef's; **25 of 30
+  pictures have no caption** until their files are renamed
+- `/academic/ny-alesund/` (11, `order: 2`) — complete
 
-Next: confirm the content-collections migration renders correctly, then the
-upload script, then content section by section in nav order.
+Known and measured, not yet fixed:
+- **Section walls download full-size photographs for 254px thumbnails.**
+  4.66 MB for four projects; about 16.3 MB per wall at fourteen. The importer
+  should make thumbnails. Measured 10 Sept.
+- The site sets **no cookies and uses no localStorage**; the only third-party
+  request is Adobe Fonts. Measured 10 Sept. Worth protecting — it means no
+  consent banner is needed.
 
 ---
 

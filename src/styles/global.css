@@ -469,15 +469,34 @@ body.is-inner .tagline {
    one picture at a time inside its limit (columns 1-5, rows 2-5): it fits,
    keeps its ratio, and is as large as the area allows. clicking the outer
    columns steps back and forward; clicking the middle goes fullscreen. */
+/* the project's name is a real button — clicking it returns you to the first
+   picture — with every default stripped so it still reads as plain text.
+   justify-self keeps the hit area on the words instead of the whole column. */
 .proj-name {
 	grid-column: 1 / 5;
 	grid-row: 2;
 	align-self: start;
+	justify-self: start;
 	/* wholly inside the gutter: the tail rests on its lower line */
 	transform: translateY(calc(-100% - var(--ink-spill)));
 	margin: 0;
 	line-height: 1;
-	font-size: calc(var(--grid-square) * 0.172);
+	font-size: var(--type-nav);
+	appearance: none;
+	background: none;
+	border: 0;
+	padding: 0;
+	font-family: inherit;
+	font-weight: inherit;
+	color: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+/* no ring for mouse users; a quiet one only when tabbing with a keyboard */
+.proj-name:focus { outline: none; }
+.proj-name:focus-visible {
+	outline: 1px solid var(--fg);
+	outline-offset: calc(var(--grid-gutter) * 0.25);
 }
 .proj-stage {
 	grid-column: 1 / 6;
@@ -488,7 +507,9 @@ body.is-inner .tagline {
 	justify-content: center;
 }
 .proj-stage img,
-.proj-full img {
+.proj-stage video,
+.proj-full img,
+.proj-full video {
 	/* contain, not max-width: a small picture must grow to the area too.
 	   every picture sits on the BOTTOM line of its area, centred across it —
 	   the same in fullscreen, where anchoring left would be conspicuous. */
@@ -541,7 +562,7 @@ body.is-full .zone-full { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27ht
 
 .proj-about {
 	grid-column: 6 / 8;
-	grid-row: 2 / 4;
+	grid-row: 2 / 5;
 	align-self: start;
 	max-height: 100%;
 	overflow-y: auto;
@@ -555,7 +576,7 @@ body.is-full .zone-full { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27ht
 }
 .proj-related {
 	grid-column: 6 / 8;
-	grid-row: 3;
+	grid-row: 4;
 	align-self: end;
 	transform: translateY(var(--descender));
 	margin: 0;
@@ -568,9 +589,29 @@ body.is-full .zone-full { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27ht
 	color: var(--fg);
 }
 
+/* how Josef was involved — the same for every picture in a project, like the
+   description. Top of row 5; the photo caption holds the bottom of the same
+   row. Set out exactly like .proj-about, so the two reading blocks match. */
+.proj-role {
+	grid-column: 6 / 8;
+	grid-row: 5;
+	align-self: start;
+	max-height: 100%;
+	overflow-y: auto;
+	scrollbar-width: none;
+	white-space: pre-line;
+	margin: 0;
+	line-height: 1.35;
+	font-size: var(--type-body);
+	font-weight: 300;
+}
+.proj-role::-webkit-scrollbar {
+	display: none;
+}
+
 .proj-caption {
 	grid-column: 6 / 8;
-	grid-row: 4 / 6;
+	grid-row: 5;
 	align-self: end;
 	transform: translateY(var(--descender));
 	margin: 0;

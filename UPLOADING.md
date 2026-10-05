@@ -5,8 +5,23 @@ Who does what, how to name things, and how to prepare pictures.
 ## The short version
 
 You put files in a folder and tell me the project is ready. I do the rest.
-Choosing the pictures and their order is your job. Making them web-sized,
-naming them, writing the data file — mine.
+Choosing the pictures and their order is your job; everything mechanical is
+mine.
+
+It is now one command, so a project takes about a minute:
+
+```
+cd ~/Documents/josefjosef-portfolio
+python3 tools/import-project.py "Log cabin in Srdov"
+```
+
+Add `--section works` or `--section academic` if it isn't architecture. Add
+`--dry-run` to see what it would do without doing it. It never deletes
+anything — running it twice just overwrites.
+
+You can run that yourself, or just tell me the folder is there and I'll run
+it. Either way the pictures, the order, the sizes and the project file all
+come out of that one line.
 
 ---
 
@@ -39,30 +54,56 @@ josefjosef-portfolio/
 `_incoming/` is ignored by git. Nothing in it reaches the website or GitHub
 until I process it, and you can delete a project's folder once it is live.
 
-### project.txt
+### The project's text file
 
-Plain text. TextEdit is fine (Format → Make Plain Text).
+One text file in the folder, any name, `.txt` or `.rtf`. Four headings, each
+on its own line ending in a colon:
 
 ```
-name: RD Myšina
-dates: 07/2021 - 08/2026
-section: architecture
+Project name:
+Srdov rural dwelling
 
-First paragraph of the description.
+Date:
+06/2025
 
-Second paragraph. Blank line between paragraphs, as normal.
+Role:
+documentation
+
+Project description:
+Just as-built documentation, but worth sharing.
 ```
 
-`section:` is one of `architecture`, `works`, `academic`.
+That is the whole file. **Do not list the pictures in it.** A picture's words
+belong in that picture's filename — see below — so there is only ever one
+place to change them, and no numbering to keep in step.
 
-### Naming the pictures
+### Naming the pictures — the template
 
-`01 approach.jpg` — number first, then a few words about what is in it.
+```
+NN words describing the picture.jpg
+```
 
-- The **number** is the order they are shown in. Nothing else sets it.
-- The **words** are my starting point for the caption. Rough is fine.
+- **`NN`** — two digits. Sets the order and nothing else.
+- **everything after the first space** — becomes the caption, and the alt text,
+  exactly as you typed it.
 
----
+```
+01 barn at sunrise.jpg
+02 log cabin cross section.jpg
+07 barn eastern elevation.jpg
+22 workflow.jpg
+29 bedroom in the log cabin with greens.jpg
+```
+
+Leave the words off and you get a picture with no caption, which is fine —
+`14.jpg` just shows nothing until you rename it.
+
+**Why this and not a list in the text file.** A list means a picture's name
+lives in two places: the file, and a line in a document. The moment you
+reorder, insert, or delete a picture the two drift apart, and nothing warns
+you — a caption quietly describes the wrong photograph. Renaming a file
+changes its caption. Renumbering a file changes its place. The Finder shows
+you exactly what the site will say. Nothing to keep in sync.
 
 ## Preparing pictures — the honest answer: barely at all
 
@@ -83,21 +124,39 @@ you already export them. If ArchiCAD offers "convert text to outlines" or
 > drawing turns out to be heavy hatching or an embedded photo, SVG bloats;
 > I'll fall back to PNG and tell you why.
 
+**Film.** Drop it in the numbered sequence like a picture — `21 sauna in
+use.MOV` straight off the phone is fine. I convert it to MP4 and pull a still
+out of the first frame for the moment before it starts.
+
+> A film plays by itself, on a loop, **with the sound off**. That is not a
+> choice: browsers refuse to autoplay anything audible. Treat it as a moving
+> photograph rather than a video with a soundtrack.
+
 Do not spend an evening editing photographs. If a picture needs actual work —
 straightening, dust, exposure — do that once in Lightroom and export normally.
 Everything mechanical is mine.
 
 ---
 
-## Captions and alt text
+## Captions come from the filenames
 
-One line per picture. It shows at the bottom right of the viewer and doubles
-as the alt text — the description a blind visitor's screen reader speaks, and
-what Google reads. One string, two jobs.
+One line per picture, shown at the bottom right of the viewer, doubling as the
+alt text a screen reader speaks.
 
-**I draft them by looking at the photographs; you correct them.** They should
-say plainly what is in the frame: "the gable and its round window", not
-"beautiful architectural composition".
+**They are made from the filename, not written by me.** You will replace them
+with real words when you have time; until then they are placeholders and the
+site works regardless.
+
+Which means naming a file well is worth the ten seconds:
+
+```
+20 barn interior.jpg   ->  "barn interior"      useful
+photo20.jpg            ->  "photo 20"           useless but harmless
+01.jpg                 ->  "picture"            no information at all
+```
+
+Numbers still set the order and can be as rough as you like — the importer
+reads them as numbers, so `drawing2` correctly comes before `drawing10`.
 
 ---
 

@@ -12,7 +12,7 @@ const real = bySection("architecture").map((p) => ({
 }));
 const projects = [
 	...real,
-	...Array.from({ length: 14 - real.length }, () => ({ name: "project name" })),
+	...Array.from({ length: Math.max(0, 14 - real.length) }, () => ({ name: "project name" })),
 ];
 ---
 

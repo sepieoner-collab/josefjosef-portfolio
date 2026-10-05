@@ -10,6 +10,12 @@ const projects = defineCollection({
 		section: z.enum(["architecture", "works", "academic"]),
 		name: z.string(),
 		dates: z.string(),
+		// where this project sits on its section wall. Lower first; projects
+		// without one fall to the end, in alphabetical order.
+		order: z.number().optional(),
+		// how Josef was involved — shown under the description, the same for
+		// every picture in the project. optional; leave it out and nothing shows.
+		role: z.string().optional(),
 		photos: z.array(
 			z.object({
 				src: z.string(),

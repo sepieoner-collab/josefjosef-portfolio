@@ -1,4 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" fill="#333333"/>
-  <text x="32" y="44" font-size="34" font-family="Helvetica, Arial, sans-serif" fill="#eeeeec" text-anchor="middle">jj</text>
+  <!-- the site's own two colours: page grey, ink grey. The letters are
+       outlined paths, not <text>, so every browser draws the same shape
+       whether or not it has Helvetica. Set in Liberation Sans Bold, which
+       has Helvetica's proportions. Ink box fills 88% of the square. -->
+  <rect width="64" height="64" fill="#e6e6e6"/>
+  <path d="M22.06,9.95 L22.06,3.84 L30.35,3.84 L30.35,9.95 L22.06,9.95 Z M21.88,60.16 Q18.93,60.16 16.87,59.90 L16.87,54.05 L18.37,54.17 Q20.49,54.17 21.28,53.24 Q22.06,52.32 22.06,49.40 L22.06,15.71 L30.35,15.71 L30.35,51.40 Q30.35,55.62 28.21,57.88 Q26.07,60.16 21.88,60.16 Z M38.84,9.95 L38.84,3.84 L47.13,3.84 L47.13,9.95 L38.84,9.95 Z M38.66,60.16 Q35.72,60.16 33.65,59.90 L33.65,54.05 L35.15,54.17 Q37.28,54.17 38.06,53.24 Q38.84,52.32 38.84,49.40 L38.84,15.71 L47.13,15.71 L47.13,51.40 Q47.13,55.62 44.99,57.88 Q42.86,60.16 38.66,60.16 Z" fill="#3a3a3a"/>
 </svg>

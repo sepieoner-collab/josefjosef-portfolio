@@ -13,10 +13,31 @@ nothing is live yet.
 
 ## 0. First thing, before anything else
 
-- [ ] **Commit and push.** A large batch is sitting uncommitted on the laptop
-      only: two whole projects (Srdov, Ny-Ålesund), the ordering feature, the
-      click-the-name behaviour, the importer, and all the documentation.
-      Ask Claude for the exact commands; they go one line at a time.
+- [x] **Committed, 5 Oct.** Two commits: `fd05633` (Srdov, Ny-Ålesund,
+      ordering, the importer, the roadmap) and `7c9e589` (wall thumbnails).
+- [ ] **PUSH IS STUCK.** GitHub is still on `2951b93`; both commits are on
+      the laptop only. Three attempts on 5 Oct over a hotspot, all the same
+      shape: the 27 MiB pack uploads, then the connection dies waiting for
+      GitHub to answer (`RPC failed; HTTP 408`, then `curl 52 Recv failure`).
+      Already set, and they did not save it: `http.version HTTP/1.1`,
+      `http.postBuffer 524288000`, `http.lowSpeedLimit 0`,
+      `http.lowSpeedTime 999999`.
+      **First thing to try: the same push from a proper wifi connection.**
+      It is a transport problem, not a repository problem — nothing is
+      damaged and nothing is lost.
+      If good wifi does not fix it, switch the remote from HTTPS to SSH,
+      which does not have this failure mode. That is a ten-minute job:
+      generate a key, paste the public half into GitHub, change the remote
+      URL. Do it once and the problem is gone for good.
+
+- [ ] **Get the photographs out of git — this is now urgent, not Phase 5.**
+      Five projects already make a 27 MiB push impossible on a weak line.
+      Forty will make it roughly 400 MB, which is unworkable for pushing,
+      cloning and for Cloudflare Pages' build limits. The options to weigh,
+      in rough order of sanity: keep only the web-sized pictures in git and
+      the originals outside it (already the case — `_incoming/` is ignored);
+      Git LFS; or an image host the site points at. Decide before project
+      ten, not project forty.
 
 ---
 
@@ -59,11 +80,35 @@ nothing is live yet.
 
 Josef asked to be reminded of these before launch, and they are all small.
 
-- [ ] favicon
-- [ ] meta description per page
-- [ ] share preview picture (what appears when the link is pasted anywhere)
-- [ ] `sitemap.xml` and `robots.txt` — so search engines can find it
-- [ ] check every picture has alt text and the headings make sense
+All five done 5 Oct.
+
+- [x] **favicon** — `public/favicon.svg`, page grey square, ink grey `jj`
+      filling 88% of it. The letters are outlined paths, not `<text>`, so the
+      shape does not depend on the viewer having Helvetica. Set in Liberation
+      Sans Bold, which carries Helvetica's proportions.
+      `public/apple-touch-icon.png` is the same at 180px, because iOS ignores
+      SVG icons.
+- [x] **meta description per page** — a `description` prop on `Layout.astro`
+      with a site-wide default. Every page passes its own; project pages
+      build theirs from the project's own name, dates and description, cut at
+      a sentence end near 155 characters. **Josef has not read these yet —
+      they are Claude's drafts and he should check the wording.**
+- [x] **share preview** — `public/share.jpg`, 1200×630: the Myšina exterior
+      with the wordmark on a page-grey band across the bottom. A project page
+      uses its own wall picture instead. Set through `og:` and `twitter:`
+      tags plus a canonical link.
+- [x] **`sitemap.xml` and `robots.txt`** — `src/pages/sitemap.xml.ts` writes
+      the sitemap from the page list plus every project, so new projects
+      appear in it by themselves. Written by hand rather than with
+      `@astrojs/sitemap`, which would need an npm install Claude cannot run.
+      A new SECTION, though, has to be added to its `FIXED` list.
+- [x] **alt text** — checked every `<img>` in the source. The wall uses the
+      project name, the viewer and the fullscreen view both take the caption
+      and keep it in step as the pictures change, the portrait names Josef.
+      The reference pictures have empty alt, which is right while they are
+      placeholders and must be revisited when real ones arrive.
+      One to confirm: the home page's cover photograph says "The workshop".
+      Is that what it is?
 
 ## 5. Going live
 
@@ -87,6 +132,19 @@ step 3 can break email.**
 
 Deliberately last. It has to react to real pictures and real text, not to
 placeholders. Doing it earlier means doing it twice.
+
+---
+
+## Found on 5 Oct, small, not yet decided
+
+- [ ] **The site says it is in English; some of it is Czech.** `<html lang="en">`
+      is set for every page, but the project descriptions are Josef's own and
+      are in Czech — which now also ends up in the `og:description` a search
+      engine reads. Options: set `lang="cs"` on project pages only, make the
+      whole site Czech, or leave it. Costs five minutes once decided; worth
+      deciding before Google indexes anything.
+- [ ] The reference pictures have empty alt text, correct while they are
+      placeholders, wrong once they are real.
 
 ---
 

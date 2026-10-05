@@ -5,9 +5,27 @@ interface Props {
 	title: string;
 	section?: "bio" | "architecture" | "works" | "academic" | "stock" | "references";
 	variant?: "home" | "inner";
+	/** the sentence Google prints under the link, and what shows when the
+	    address is pasted into a message. One per page; keep it under about
+	    155 characters or the end is cut off. */
+	description?: string;
+	/** the picture that shows when the address is pasted somewhere. Defaults
+	    to the site's own share card. */
+	image?: string;
 }
 
-const { title, section, variant = "inner" } = Astro.props;
+const {
+	title,
+	section,
+	variant = "inner",
+	description = "Josef Kučera — architect, carpenter and joiner. Digital portfolio of architecture, built work and academic projects.",
+	image = "/share.jpg",
+} = Astro.props;
+
+// Astro.site comes from astro.config.mjs. Absolute addresses are required
+// here: a message app pasting the link cannot resolve "/share.jpg".
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const shareImage = new URL(image, Astro.site);
 
 const sections = [
 	{ key: "bio", label: "bio", href: "/bio/" },
@@ -24,7 +42,20 @@ const sections = [
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical} />
 		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+		{/* what a message app, Slack or Facebook shows when the link is pasted */}
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="josefjosef" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:image" content={shareImage} />
+		<meta name="twitter:card" content="summary_large_image" />
+
 		<link rel="stylesheet" href="https://use.typekit.net/lhb7wgk.css">
 	</head>
 	<body class={variant === "home" ? "is-home" : "is-inner"}>

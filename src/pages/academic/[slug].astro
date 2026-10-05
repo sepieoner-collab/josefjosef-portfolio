@@ -16,9 +16,28 @@ const first = project.photos[0];
 // the only thing that decides which element is used
 const isFilm = (src: string) => /\.(mp4|webm)$/i.test(src);
 const poster = (src: string) => src.replace(/\.(mp4|webm)$/i, ".jpg");
+
+// the sentence a search engine prints under the link: the project's own
+// words, cut at a sentence end if there is one within range
+const blurb = (() => {
+	const text = project.description.replace(/\s+/g, " ").trim();
+	const head = `${project.name}, ${project.dates}`;
+	if (!text || text === "TODO") return `${head} \u2014 a project by Josef Ku\u010dera.`;
+	const room = 155 - head.length - 3;
+	if (text.length <= room) return `${head} \u2014 ${text}`;
+	const cut = text.slice(0, room);
+	const stop = cut.lastIndexOf(". ");
+	return `${head} \u2014 ${(stop > 40 ? cut.slice(0, stop + 1) : cut.trimEnd() + "\u2026")}`;
+})();
+
 ---
 
-<Layout title={`josefjosef — ${project.name}`} section="academic">
+<Layout
+	title={`josefjosef — ${project.name}`}
+	section="academic"
+	description={blurb}
+	image={project.thumb}
+>
 	<section class="screen">
 		<div class="grid">
 			<button type="button" class="proj-name" id="proj-name">{project.name}</button>
